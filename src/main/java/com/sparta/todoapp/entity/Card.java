@@ -1,5 +1,6 @@
 package com.sparta.todoapp.entity;
 
+import com.sparta.todoapp.dto.CardCompleteRequestDto;
 import com.sparta.todoapp.dto.CardRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -24,11 +25,16 @@ public class Card extends Timestamped{
     private String content;
 
     @Column(nullable = false)
-    private String complete;
+    private boolean complete;
 
     public Card(CardRequestDto requestDto){
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
-        this.complete = requestDto.getComplete();
+        this.complete = requestDto.isComplete();
     }
+
+    public void completeUpdate(CardCompleteRequestDto requestDto) {
+        this.complete = requestDto.isComplete();
+    }
+
 }

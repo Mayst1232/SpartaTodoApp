@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class CardRequestDto {
     private String title;
     private String content;
-    private String complete = "false";
+    private boolean complete = false;
 }
