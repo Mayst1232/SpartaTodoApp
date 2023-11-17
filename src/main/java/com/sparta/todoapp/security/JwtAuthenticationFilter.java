@@ -1,9 +1,8 @@
 package com.sparta.todoapp.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.todoapp.dto.StatusResponseDto;
 import com.sparta.todoapp.dto.LoginRequestDto;
-import com.sparta.todoapp.dto.SuccessResponseDto;
+import com.sparta.todoapp.dto.StatusResponseDto;
 import com.sparta.todoapp.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;

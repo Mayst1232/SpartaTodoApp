@@ -54,8 +54,8 @@ public class CardController {
                                           @RequestBody CardCompleteRequestDto requestDto,
                                           @AuthenticationPrincipal UserDetailsImpl userDetails){
         try {
-            CardResponseDto cardResponseDto = cardService.completeTodo(id, requestDto, userDetails.getUser());
-            return ResponseEntity.ok(cardResponseDto);
+            CardExceptCommentResponseDto cardExceptCommentResponseDto = cardService.completeTodo(id, requestDto, userDetails.getUser());
+            return ResponseEntity.ok(cardExceptCommentResponseDto);
         } catch (NullPointerException | IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(new StatusResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value()));
         }

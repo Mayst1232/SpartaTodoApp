@@ -4,14 +4,12 @@ import com.sparta.todoapp.dto.*;
 import com.sparta.todoapp.entity.Card;
 import com.sparta.todoapp.entity.User;
 import com.sparta.todoapp.repository.CardRepository;
-import com.sparta.todoapp.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -50,10 +48,10 @@ public class CardService {
     }
 
     @Transactional
-    public CardResponseDto completeTodo(Long id, CardCompleteRequestDto requestDto, User user) {
+    public CardExceptCommentResponseDto completeTodo(Long id, CardCompleteRequestDto requestDto, User user) {
         Card myCard = checkCard(id, user);
         myCard.completeUpdate(requestDto);
-        return new CardResponseDto(myCard);
+        return new CardExceptCommentResponseDto(myCard);
     }
 
     public void deleteCard(Long id, User user) {
