@@ -1,9 +1,7 @@
 package com.sparta.todoapp.controller;
 
-import com.sparta.todoapp.dto.CardCompleteRequestDto;
-import com.sparta.todoapp.dto.CardExceptCommentResponseDto;
-import com.sparta.todoapp.dto.CardRequestDto;
-import com.sparta.todoapp.dto.CardResponseDto;
+import com.sparta.todoapp.dto.*;
+import com.sparta.todoapp.entity.User;
 import com.sparta.todoapp.security.UserDetailsImpl;
 import com.sparta.todoapp.service.CardService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,7 @@ public class CardController {
     private final CardService cardService;
 
     @PostMapping("/cards")
-    public CardResponseDto createCard(@RequestBody CardRequestDto requestDto,
+    public CardExceptCommentResponseDto createCard(@RequestBody CardRequestDto requestDto,
                                       @AuthenticationPrincipal UserDetailsImpl userDetails){
         return cardService.createCard(requestDto, userDetails.getUser());
     }
@@ -36,12 +34,23 @@ public class CardController {
         return cardService.getAllCards();
     }
 
+    @PatchMapping("/cards/{id}")
+    public CardExceptCommentResponseDto cardModify(@PathVariable Long id,
+                                            @RequestBody CardModifyRequestDto requestDto,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return cardService.cardModify(id, requestDto, userDetails.getUser());
+    }
 
-
-    @PutMapping("/cards/complete/{id}")
+    @PatchMapping("/cards/complete/{id}")
     public CardResponseDto completeTodo(@PathVariable Long id,
                                         @RequestBody CardCompleteRequestDto requestDto,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails){
         return cardService.completeTodo(id, requestDto, userDetails.getUser());
+    }
+
+    @DeleteMapping("/cards/{id}")
+    public void deleteCard(@PathVariable Long id,
+                           @AuthenticationPrincipal UserDetailsImpl userDetails){
+        cardService.deleteCard(id, userDetails.getUser());
     }
 }

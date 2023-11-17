@@ -38,4 +38,8 @@ public class CommentService {
 
         return responseDtoList;
     }
+
+//    public CommentResponseDto modifyComment(Long cardId, CommentRequestDto requestDto, User user) {
+//        Comment
+//    }
 }

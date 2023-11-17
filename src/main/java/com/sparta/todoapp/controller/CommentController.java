@@ -28,4 +28,11 @@ public class CommentController {
     public List<CommentResponseDto> getComments(@PathVariable Long cardId){
         return commentService.getComments(cardId);
     }
+
+//    @PatchMapping("/cards/{cardId}/comments")
+//    public CommentResponseDto modifyComment(@PathVariable Long cardId,
+//                                            @RequestBody CommentRequestDto requestDto,
+//                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
+//        return commentService.modifyComment(cardId, requestDto, userDetails.getUser());
+//    }
 }
