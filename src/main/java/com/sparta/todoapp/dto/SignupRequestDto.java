@@ -1,9 +1,6 @@
 package com.sparta.todoapp.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,14 +8,12 @@ import lombok.Setter;
 @Setter
 public class SignupRequestDto {
     @NotBlank
-//    @Pattern(regexp = "^[a-z0-9]*$")
-//    @Min(4)
-//    @Max(10)
+    @Pattern(regexp = "^[a-z0-9]*$")
+    @Size(min = 4, max = 10)
     private String username;
 
     @NotBlank
-//    @Pattern(regexp = "^[a-zA-Z0-9]*$")
-//    @Min(8)
-//    @Min(15)
+    @Pattern(regexp = "^[a-zA-Z0-9]*$")
+    @Size(min = 8, max = 15)
     private String password;
 }
