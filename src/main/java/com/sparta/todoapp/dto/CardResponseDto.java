@@ -5,6 +5,7 @@ import com.sparta.todoapp.entity.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,8 @@ public class CardResponseDto {
     private String title;
     private String content;
     private boolean complete;
+    private LocalDateTime writeDate;
+    private LocalDateTime modifyDate;
 
     private List<CommentResponseDto> commentList = new ArrayList<>();
 
@@ -25,6 +28,8 @@ public class CardResponseDto {
         this.title = card.getTitle();
         this.content = card.getContent();
         this.complete = card.isComplete();
+        this.writeDate = card.getWriteDate();
+        this.modifyDate = card.getModifyDate();
         for (Comment comment : card.getCommentList()) {
             commentList.add(new CommentResponseDto(comment));
         }
