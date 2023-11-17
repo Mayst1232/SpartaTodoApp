@@ -1,7 +1,9 @@
 package com.sparta.todoapp.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.todoapp.dto.StatusResponseDto;
 import com.sparta.todoapp.dto.LoginRequestDto;
+import com.sparta.todoapp.dto.SuccessResponseDto;
 import com.sparta.todoapp.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,10 +15,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
+    private final ObjectMapper ob = new ObjectMapper();
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -42,15 +46,27 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult){
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
-
         String token = jwtUtil.createToken(username);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+        String message = "로그인에 성공했습니다.";
+        response.setStatus(200);
+
+        String json = ob.writeValueAsString(new StatusResponseDto(message, response.getStatus()));
+        PrintWriter writer = response.getWriter();
+
+        writer.println(json);
+        writer.println("{" + token + "}");
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed){
-        response.setStatus(401);
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        response.setStatus(400);
+        String message = "로그인에 실패했습니다.";
+        String json = ob.writeValueAsString(new StatusResponseDto(message, response.getStatus()));
+        PrintWriter writer = response.getWriter();
+
+        writer.println(json);
     }
 }

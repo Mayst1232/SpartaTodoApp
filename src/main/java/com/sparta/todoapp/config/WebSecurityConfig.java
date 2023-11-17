@@ -63,8 +63,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/user/**").permitAll()
                         .anyRequest().authenticated()
         );
-        httpSecurity.formLogin((formLogin) ->
-                formLogin.loginPage("/api/user/login-page").permitAll());
+
+        //httpSecurity.formLogin(config -> config.disable());
+        //form 로그인 사용을 안하기 때문에 안쓴다.
 
         httpSecurity.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         httpSecurity.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

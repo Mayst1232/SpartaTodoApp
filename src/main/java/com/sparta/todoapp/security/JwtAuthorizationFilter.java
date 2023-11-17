@@ -1,5 +1,7 @@
 package com.sparta.todoapp.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.todoapp.dto.StatusResponseDto;
 import com.sparta.todoapp.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -16,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Slf4j(topic = "JWT 검증 및 인가")
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -36,6 +39,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if(StringUtils.hasText(tokenValue)){
             if(!jwtUtil.validateToken(tokenValue)){
                 log.error("Token Error");
+                // 토큰이 유효하지 않다!!!
+                ObjectMapper ob = new ObjectMapper();
+                String message = "토큰이 유효하지 않습니다.";
+                response.setStatus(400);
+
+                String json = ob.writeValueAsString(new StatusResponseDto(message, response.getStatus()));
+                PrintWriter writer = response.getWriter();
+                writer.println(json);
                 return;
             }
 
@@ -48,7 +59,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 return;
             }
         }
-
         filterChain.doFilter(request,response);
     }
 
