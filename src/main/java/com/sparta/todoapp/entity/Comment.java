@@ -1,5 +1,6 @@
 package com.sparta.todoapp.entity;
 
+import com.sparta.todoapp.dto.CommentRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,5 +35,9 @@ public class Comment {
         this.writer = writer;
         this.user = user;
         this.card = card;
+    }
+
+    public void update(CommentRequestDto requestDto) {
+        this.content = requestDto.getContent();
     }
 }

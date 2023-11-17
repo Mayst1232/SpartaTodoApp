@@ -39,7 +39,21 @@ public class CommentService {
         return responseDtoList;
     }
 
-//    public CommentResponseDto modifyComment(Long cardId, CommentRequestDto requestDto, User user) {
-//        Comment
-//    }
+    public CommentResponseDto modifyComment(Long commentId, CommentRequestDto requestDto, User user) {
+        Comment comment = commentRepository.findByUserAndId(user,commentId).orElseThrow(
+                () -> new NullPointerException("해당하는 댓글이 존재하지 않습니다.")
+        );
+
+        comment.update(requestDto);
+
+        return new CommentResponseDto(comment);
+    }
+
+    public void deleteComment(Long commentId, User user) {
+        Comment comment = commentRepository.findByUserAndId(user,commentId).orElseThrow(
+                () -> new NullPointerException("해당하는 댓글이 존재하지 않습니다.")
+        );
+
+        commentRepository.delete(comment);
+    }
 }

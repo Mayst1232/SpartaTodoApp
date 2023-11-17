@@ -29,10 +29,16 @@ public class CommentController {
         return commentService.getComments(cardId);
     }
 
-//    @PatchMapping("/cards/{cardId}/comments")
-//    public CommentResponseDto modifyComment(@PathVariable Long cardId,
-//                                            @RequestBody CommentRequestDto requestDto,
-//                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
-//        return commentService.modifyComment(cardId, requestDto, userDetails.getUser());
-//    }
+    @PatchMapping("/cards/comments/{commentId}")
+    public CommentResponseDto modifyComment(@PathVariable Long commentId,
+                                            @RequestBody CommentRequestDto requestDto,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return commentService.modifyComment(commentId, requestDto, userDetails.getUser());
+    }
+
+    @DeleteMapping("/cards/comments/{commentId")
+    public void deleteComment(@PathVariable Long commentId,
+                              @AuthenticationPrincipal UserDetailsImpl userDetails){
+        commentService.deleteComment(commentId, userDetails.getUser());
+    }
 }
