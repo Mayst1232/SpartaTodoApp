@@ -39,7 +39,9 @@ public class CardController {
 
 
     @PutMapping("/cards/complete/{id}")
-    public CardResponseDto completeTodo(@PathVariable Long id, @RequestBody CardCompleteRequestDto requestDto){
-        return cardService.completeTodo(id, requestDto);
+    public CardResponseDto completeTodo(@PathVariable Long id,
+                                        @RequestBody CardCompleteRequestDto requestDto,
+                                        @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return cardService.completeTodo(id, requestDto, userDetails.getUser());
     }
 }

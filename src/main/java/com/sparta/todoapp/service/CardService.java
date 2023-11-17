@@ -41,15 +41,25 @@ public class CardService {
     }
 
     @Transactional
-    public CardResponseDto completeTodo(Long id, CardCompleteRequestDto requestDto) {
+    public CardResponseDto completeTodo(Long id, CardCompleteRequestDto requestDto, User user) {
 
-        Card card = cardRepository.findById(id).orElseThrow(
+        Card card = cardRepository.findByUserAndId(user, id).orElseThrow(
                 () -> new NullPointerException("해당하는 카드가 없습니다.")
         );
 
         card.completeUpdate(requestDto);
         return new CardResponseDto(card);
     }
+
+//    public CardResponseDto completeTodo(Long id, CardCompleteRequestDto requestDto, User user) {
+//
+//        Card card = cardRepository.findById(id).orElseThrow(
+//                () -> new NullPointerException("해당하는 카드가 없습니다.")
+//        );
+//
+//        card.completeUpdate(requestDto);
+//        return new CardResponseDto(card);
+//    }
 
     public List<CardExceptCommentResponseDto> getAllCards() {
 
