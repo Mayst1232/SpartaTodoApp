@@ -35,7 +35,7 @@ public class Card extends Timestamped{
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "card" ,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "card" ,cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Comment> commentList = new ArrayList<>();
 
     public Card(CardRequestDto requestDto, User user){
