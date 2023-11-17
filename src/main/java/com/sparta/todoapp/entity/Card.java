@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -27,14 +30,21 @@ public class Card extends Timestamped{
     @Column(nullable = false)
     private boolean complete;
 
-    public Card(CardRequestDto requestDto){
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @OneToMany(mappedBy = "card" ,fetch = FetchType.LAZY)
+    private List<Comment> commentList = new ArrayList<>();
+
+    public Card(CardRequestDto requestDto, User user){
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
         this.complete = requestDto.isComplete();
+        this.user = user;
     }
 
     public void completeUpdate(CardCompleteRequestDto requestDto) {
         this.complete = requestDto.isComplete();
     }
-
 }
