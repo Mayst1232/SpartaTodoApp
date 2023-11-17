@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -27,14 +28,6 @@ public class CardService {
         Card card = cardRepository.findById(id).orElseThrow(() -> new NullPointerException("존재하지 않는 카드입니다."));
 
         return new CardResponseDto(card);
-
-//        List<Card> cardList = cardRepository.findAllByUser(user);
-//        List<CardResponseDto> responseDtoList = new ArrayList<>();
-//
-//        for (Card card : cardList) {
-//            responseDtoList.add(new CardResponseDto(card));
-//        }
-//        return responseDtoList;
     }
 
     public List<CardExceptCommentResponseDto> getAllCards() {
@@ -51,42 +44,46 @@ public class CardService {
 
     @Transactional
     public CardExceptCommentResponseDto cardModify(Long id, CardModifyRequestDto requestDto, User user) {
-        Card card = cardRepository.findByUserAndId(user, id).orElseThrow(
-                () -> new NullPointerException("해당하는 카드가 없습니다.")
-        );
-
-        card.updateCard(requestDto);
-
-        return new CardExceptCommentResponseDto(card);
+        Card myCard = checkCard(id, user);
+        myCard.updateCard(requestDto);
+        return new CardExceptCommentResponseDto(myCard);
     }
 
     @Transactional
     public CardResponseDto completeTodo(Long id, CardCompleteRequestDto requestDto, User user) {
-
-        Card card = cardRepository.findByUserAndId(user, id).orElseThrow(
-                () -> new NullPointerException("해당하는 카드가 없습니다.")
-        );
-
-        card.completeUpdate(requestDto);
-        return new CardResponseDto(card);
+        Card myCard = checkCard(id, user);
+        myCard.completeUpdate(requestDto);
+        return new CardResponseDto(myCard);
     }
 
     public void deleteCard(Long id, User user) {
+        Card myCard = checkCard(id, user);
 
-        Card card = cardRepository.findByUserAndId(user, id).orElseThrow(
-                () -> new NullPointerException("해당하는 카드가 없습니다.")
-        );
-
-        cardRepository.delete(card);
+        cardRepository.delete(myCard);
     }
 
-//    public CardResponseDto completeTodo(Long id, CardCompleteRequestDto requestDto, User user) {
-//
-//        Card card = cardRepository.findById(id).orElseThrow(
-//                () -> new NullPointerException("해당하는 카드가 없습니다.")
-//        );
-//
-//        card.completeUpdate(requestDto);
-//        return new CardResponseDto(card);
-//    }
+    public Card checkCard(Long id, User user){
+
+        Card myCard = new Card();
+
+        List<Card> cardList = cardRepository.findAllByUser(user);
+        if(cardList.isEmpty()){
+            throw new NullPointerException("작성한 카드가 존재하지 않습니다.");
+        }
+
+        Card checkCard = cardRepository.findById(id).orElseThrow(()-> new NullPointerException("해당 id의 카드가 존재하지 않습니다."));
+
+        for (Card card : cardList) {
+            if (card.getId().equals(id)) {
+                myCard = card;
+                break;
+            }
+        }
+        if(myCard.getId() == null){
+            throw new IllegalArgumentException("작성자만이 카드를 수정/삭제 할 수 있습니다.");
+        }
+
+        return myCard;
+    }
+
 }

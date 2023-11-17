@@ -50,10 +50,13 @@ public class Card extends Timestamped{
     }
 
     public void updateCard(CardModifyRequestDto requestDto) {
-        if(requestDto.getTitle() == null){
+        if(requestDto.getTitle() == null && requestDto.getContent() != null) {
             this.content = requestDto.getContent();
-        } else if(requestDto.getContent() == null){
+        } else if(requestDto.getTitle() != null && requestDto.getContent() == null) {
             this.title = requestDto.getTitle();
+        } else if(requestDto.getContent() != null && requestDto.getTitle() != null){
+            this.title = requestDto.getTitle();
+            this.content = requestDto.getContent();
         }
     }
 }
