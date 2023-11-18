@@ -31,6 +31,9 @@ public class Card extends Timestamped{
     @Column(nullable = false)
     private boolean complete;
 
+    @Column(nullable = false)
+    private boolean visible;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -42,6 +45,7 @@ public class Card extends Timestamped{
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
         this.complete = requestDto.isComplete();
+        this.visible = requestDto.isVisible();
         this.user = user;
     }
 

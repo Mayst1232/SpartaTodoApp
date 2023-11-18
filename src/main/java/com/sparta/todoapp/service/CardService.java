@@ -22,15 +22,22 @@ public class CardService {
     }
 
 
-    public CardResponseDto getCards(Long id) {
+    public CardResponseDto getCards(Long id, User user) {
         Card card = cardRepository.findById(id).orElseThrow(() -> new NullPointerException("존재하지 않는 카드입니다."));
 
-        return new CardResponseDto(card);
+        if(card.isVisible()){
+            return new CardResponseDto(card);
+        } else {
+            card = cardRepository.findByUserAndId(user, id).orElseThrow(
+                    () -> new NullPointerException("해당하는 카드가 없습니다.")
+            );
+            return new CardResponseDto(card);
+        }
     }
 
     public List<CardExceptCommentResponseDto> getAllCards() {
 
-        List<Card> cardList = cardRepository.findAll();
+        List<Card> cardList = cardRepository.findAllByVisible(true);
         List<CardExceptCommentResponseDto> responseDtoList = new ArrayList<>();
 
         for (Card card : cardList) {

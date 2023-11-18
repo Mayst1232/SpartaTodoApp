@@ -27,10 +27,20 @@ public class CardController {
     }
 
     @GetMapping("/cards/{id}")
-    public CardResponseDto getCards(@PathVariable Long id){
-        return cardService.getCards(id);
-//        return cardService.getCards(id, userDetails.getUser());
+    public ResponseEntity<?> getCards(@PathVariable Long id,
+                                      @AuthenticationPrincipal UserDetailsImpl userDetails){
+        try {
+            CardResponseDto cardResponseDto = cardService.getCards(id, userDetails.getUser());
+            return ResponseEntity.ok().body(cardResponseDto);
+        } catch (NullPointerException ex){
+            return ResponseEntity.badRequest().body(new StatusResponseDto(ex.getMessage(),HttpStatus.BAD_REQUEST.value()));
+        }
     }
+
+//    public CardResponseDto getCards(@PathVariable Long id,
+//                                    @AuthenticationPrincipal UserDetailsImpl userDetails){
+//        return cardService.getCards(id, userDetails.getUser());
+//    }
 
     @GetMapping("/cards")
     public List<CardExceptCommentResponseDto> getAllCards(){
