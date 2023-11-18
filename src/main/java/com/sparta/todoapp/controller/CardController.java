@@ -37,14 +37,15 @@ public class CardController {
         }
     }
 
-//    public CardResponseDto getCards(@PathVariable Long id,
-//                                    @AuthenticationPrincipal UserDetailsImpl userDetails){
-//        return cardService.getCards(id, userDetails.getUser());
-//    }
-
     @GetMapping("/cards")
     public List<CardExceptCommentResponseDto> getAllCards(){
         return cardService.getAllCards();
+    }
+
+    @GetMapping("/cards/title")
+    public List<CardExceptCommentResponseDto> getTitleCards(@RequestBody CardTitleRequestDto requestDto,
+                                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return cardService.getTitleCards(requestDto, userDetails.getUser());
     }
 
     @PatchMapping("/cards/{id}")

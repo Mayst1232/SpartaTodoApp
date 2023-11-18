@@ -13,4 +13,6 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findAllByVisible(boolean b);
 
     Optional<Card> findByUserAndId(User user, Long id);
+
+    List<Card> findAllByTitle(String title);
 }

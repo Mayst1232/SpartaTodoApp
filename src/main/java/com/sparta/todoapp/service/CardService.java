@@ -47,6 +47,17 @@ public class CardService {
         return responseDtoList;
     }
 
+    public List<CardExceptCommentResponseDto> getTitleCards(CardTitleRequestDto requestDto, User user) {
+        List<Card> cardList = cardRepository.findAllByTitle(requestDto.getTitle());
+        List<CardExceptCommentResponseDto> responseDtoList = new ArrayList<>();
+
+        for (Card card : cardList) {
+            responseDtoList.add(new CardExceptCommentResponseDto(card));
+        }
+
+        return responseDtoList;
+    }
+
     @Transactional
     public CardExceptCommentResponseDto cardModify(Long id, CardModifyRequestDto requestDto, User user) {
         Card myCard = checkCard(id, user);
@@ -90,5 +101,4 @@ public class CardService {
 
         return myCard;
     }
-
 }
