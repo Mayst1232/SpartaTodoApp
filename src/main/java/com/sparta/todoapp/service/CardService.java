@@ -51,8 +51,17 @@ public class CardService {
         List<Card> cardList = cardRepository.findAllByTitle(requestDto.getTitle());
         List<CardExceptCommentResponseDto> responseDtoList = new ArrayList<>();
 
+        if(cardList.isEmpty()){
+            throw new NullPointerException("해당하는 제목의 게시물이 존재하지 않습니다.");
+        }
+
         for (Card card : cardList) {
-            responseDtoList.add(new CardExceptCommentResponseDto(card));
+            if(card.isVisible()){
+                responseDtoList.add(new CardExceptCommentResponseDto(card));
+            } else {
+                card = cardRepository.findByUserAndTitle(user, requestDto.getTitle());
+                responseDtoList.add(new CardExceptCommentResponseDto(card));
+            }
         }
 
         return responseDtoList;

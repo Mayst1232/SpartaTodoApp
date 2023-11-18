@@ -15,4 +15,6 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     Optional<Card> findByUserAndId(User user, Long id);
 
     List<Card> findAllByTitle(String title);
+
+    Card findByUserAndTitle(User user, String title);
 }

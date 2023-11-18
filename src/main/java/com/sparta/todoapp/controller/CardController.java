@@ -43,10 +43,20 @@ public class CardController {
     }
 
     @GetMapping("/cards/title")
-    public List<CardExceptCommentResponseDto> getTitleCards(@RequestBody CardTitleRequestDto requestDto,
-                                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return cardService.getTitleCards(requestDto, userDetails.getUser());
+    public ResponseEntity<?> getTitleCards(@RequestBody CardTitleRequestDto requestDto,
+                                           @AuthenticationPrincipal UserDetailsImpl userDetails){
+        try {
+            List<CardExceptCommentResponseDto> cardList = cardService.getTitleCards(requestDto, userDetails.getUser());
+            return ResponseEntity.ok(cardList);
+        } catch (NullPointerException ex){
+            return ResponseEntity.badRequest().body(new StatusResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        }
     }
+
+//    public List<CardExceptCommentResponseDto> getTitleCards(@RequestBody CardTitleRequestDto requestDto,
+//                                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
+//        return cardService.getTitleCards(requestDto, userDetails.getUser());
+//    }
 
     @PatchMapping("/cards/{id}")
     public ResponseEntity<?> cardModify(@PathVariable Long id,
