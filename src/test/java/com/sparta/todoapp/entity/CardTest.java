@@ -47,4 +47,19 @@ class CardTest {
         assertThat(card.getUser().getUsername()).isEqualTo("Mayst");
         assertThat(card.getUser().getPassword()).isEqualTo("1234");
     }
+
+    @DisplayName("카드에 적힌 할일이 끝나고 완료 버튼을 누르면 완료됨을 알려줍니다.")
+    @Test
+    void completeUpdateTest(){
+        // given
+        Card card = new Card();
+        card.setComplete(false);
+        CardCompleteRequestDto request = new CardCompleteRequestDto(true);
+
+        // when
+        card.completeUpdate(request);
+
+        // then
+        assertThat(card.isComplete()).isTrue();
+    }
 }
