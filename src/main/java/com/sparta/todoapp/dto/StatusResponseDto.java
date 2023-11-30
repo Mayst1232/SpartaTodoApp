@@ -12,9 +12,3 @@ public class StatusResponseDto {
         this.status = status;
     }
 }
-
-//public record ErrorResponseDto(
-//        String message,
-//        int status
-//){
-//}
