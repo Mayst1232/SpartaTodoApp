@@ -4,6 +4,7 @@ import com.sparta.todoapp.dto.CardCompleteRequestDto;
 import com.sparta.todoapp.dto.CardModifyRequestDto;
 import com.sparta.todoapp.dto.CardRequestDto;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -41,6 +42,7 @@ public class Card extends Timestamped{
     @OneToMany(mappedBy = "card" , fetch = FetchType.LAZY)
     private List<Comment> commentList = new ArrayList<>();
 
+    @Builder
     public Card(CardRequestDto requestDto, User user){
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();

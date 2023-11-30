@@ -2,6 +2,7 @@ package com.sparta.todoapp.entity;
 
 import com.sparta.todoapp.dto.CommentRequestDto;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,6 +31,7 @@ public class Comment extends Timestamped {
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
+    @Builder
     public Comment(String content, String writer, User user, Card card){
         this.content = content;
         this.writer = writer;
