@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.*;
 
 class UserTest {
     @Test
-    @DisplayName("User에 username과 password가 전달된 값과 일치해야 합니다")
+    @DisplayName("User에 전달된 username과 password가 전달된 값과 일치해야 합니다")
     public void testUserConstructor(){
         // given
         User user = Mockito.spy(User.builder()
