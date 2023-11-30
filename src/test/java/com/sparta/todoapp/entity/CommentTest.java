@@ -38,5 +38,18 @@ class CommentTest {
         assertThat(comment.getCard()).isEqualTo(card);
     }
 
+    @Test
+    @DisplayName("Comment의 내용을 바꾸는 기능 테스트")
+    void updateComment() {
+        // given
+        CommentRequestDto requestDto = new CommentRequestDto("변경 댓글 내용입니다.");
 
+        Comment comment = new Comment();
+
+        // when
+        comment.update(requestDto);
+
+        // then
+        assertThat(comment.getContent()).isEqualTo(requestDto.getContent());
+    }
 }
