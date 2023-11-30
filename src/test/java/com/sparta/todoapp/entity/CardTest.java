@@ -62,4 +62,56 @@ class CardTest {
         // then
         assertThat(card.isComplete()).isTrue();
     }
+
+    @DisplayName("카드 내의 정보를 바꿀 때 제목만 바꾸고 싶을 경우를 확인합니다.")
+    @Test
+    void updateCardTitleTest(){
+        // given
+        CardModifyRequestDto modifyRequestDto = new CardModifyRequestDto("변경된 제목 1" , null);
+
+        Card card = new Card();
+        card.setTitle("기존 제목");
+        card.setContent("기존 내용");
+
+        // when
+        card.updateCard(modifyRequestDto);
+
+        // then
+        assertThat(card.getTitle()).isEqualTo(modifyRequestDto.getTitle());
+        assertThat(card.getContent()).isNotEqualTo(modifyRequestDto.getContent());
+    }
+
+    @DisplayName("카드 내의 정보를 바꿀 때 내용만 바꾸고 싶을 경우를 확인합니다.")
+    @Test
+    void updateCardContentTest(){
+        // given
+        CardModifyRequestDto modifyRequestDto = new CardModifyRequestDto(null, "변경된 내용 1");
+
+        Card card = new Card();
+        card.setTitle("기존 제목");
+        card.setContent("기존 내용");
+
+        // when
+        card.updateCard(modifyRequestDto);
+
+        // then
+        assertThat(card.getTitle()).isEqualTo(modifyRequestDto.getContent());
+        assertThat(card.getContent()).isNotEqualTo(modifyRequestDto.getTitle());
+    }
+
+    @DisplayName("카드 내의 정보를 바꿀 때 제목과 내용 둘 다 바꾸고 싶을 경우를 확인합니다.")
+    @Test
+    void updateCardBothTest(){
+        // given
+        CardModifyRequestDto modifyRequestDto = new CardModifyRequestDto("변경된 제목 2", "변경된 내용 2");
+
+        Card card = new Card();
+        card.setTitle("기존 제목");
+        card.setContent("기존 내용");
+
+        // when - then
+        card.updateCard(modifyRequestDto);
+        assertThat(card.getTitle()).isEqualTo(modifyRequestDto.getTitle());
+        assertThat(card.getContent()).isEqualTo(modifyRequestDto.getContent());
+    }
 }
