@@ -28,7 +28,10 @@ public class CardService {
         if(card.isVisible()){
             return new CardResponseDto(card);
         } else {
-            card = cardRepository.findByUserAndId(user, id).orElseThrow(
+
+            var op = cardRepository.findByUserAndId(user, id);
+            System.out.println("여기 들어오니?");
+            card = op.orElseThrow(
                     () -> new NullPointerException("해당하는 카드가 없습니다.")
             );
             return new CardResponseDto(card);
