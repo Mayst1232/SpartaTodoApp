@@ -194,8 +194,21 @@ class CardServiceTest {
     }
 
     @Test
-    void cardModify() {
+    @DisplayName("자신의 할일 카드의 제목/내용을 수정할 때의 동작 테스트")
+    void cardModifyTest() {
+        // given
+        Long id = 3L;
+        User user = new User();
 
+        checkCardTestSuccess(id, user);
+
+        CardModifyRequestDto requestDto = new CardModifyRequestDto("바꿀 제목", "바꿀 내용");
+
+        // when
+        cardService.cardModify(id, requestDto, user);
+
+        // then
+        assertThat("바꿀 제목").isEqualTo(requestDto.getTitle());
     }
 
     @Test
@@ -208,7 +221,7 @@ class CardServiceTest {
 
     @Test
     @DisplayName("수정/삭제 하려는 카드가 자신의 할일 카드일때 성공 테스트")
-    Card checkCardTestSuccess(Long id, User user) {
+    void checkCardTestSuccess(Long id, User user) {
         // given
         List<Card> cardList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
@@ -228,7 +241,6 @@ class CardServiceTest {
         // then
         assertThat("할일 카드 제목 2").isEqualTo(myCard.getTitle());
 
-        return myCard;
     }
 
     @Test
