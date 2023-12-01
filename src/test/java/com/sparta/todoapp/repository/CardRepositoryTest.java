@@ -116,6 +116,17 @@ class CardRepositoryTest extends RepositoryTest {
         assertThat(cardList).map(Card::getTitle).contains("할일 카드 제목 1", "할일 카드 제목 2", "할일 카드 제목 3", "할일 카드 제목 4", "할일 카드 제목 5");
     }
 
+    @Test
+    void findAllByVisibleTest() {
+        for(int i = 1; i < 6; i++){
+            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 " + i, "할일 카드 내용 " + i, i % 2 == 0, false);
+            saveSampleCard((long) i, requestDto, user);
+        }
 
+        List<Card> cardList = cardRepository.findAllByVisible(true);
+
+        assertThat(cardList).hasSize(2);
+        assertThat(cardList).map(Card::getTitle).contains("할일 카드 제목 2", "할일 카드 제목 4");
+    }
 
 }
