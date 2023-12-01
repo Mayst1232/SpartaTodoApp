@@ -19,7 +19,10 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -232,7 +235,18 @@ class CardServiceTest {
     }
 
     @Test
-    void deleteCard() {
+    @DisplayName("자신의 카드를 삭제하는 기능 테스트")
+    void deleteCardTest() {
+        // given
+        User user = new User();
+        Long id = 3L;
+        checkCard(user, id);
+
+        // when
+        cardService.deleteCard(id, user);
+
+        // then
+        verify(cardRepository, times(1)).delete(any());
     }
 
     void checkCard(User user, Long id) {
@@ -247,7 +261,7 @@ class CardServiceTest {
 
         given(cardRepository.findAllByUser(user)).willReturn(cardList);
 
-        given(cardRepository.findById(id)).willReturn(Optional.of(cardList.get(2)));
+        given(cardRepository.findById(anyLong())).willReturn(Optional.of(cardList.get(2)));
 
         // when
         Card myCard = cardService.checkCard(id, user);
