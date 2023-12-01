@@ -47,14 +47,48 @@ class CardRepositoryTest extends RepositoryTest {
         assertThat(saveCard.isComplete()).isEqualTo(card.isComplete());
     }
 
-    void saveSampleCard(CardRequestDto requestDto, User user){
+    void saveSampleCard(Long id,CardRequestDto requestDto, User user){
         Card card = Card.builder()
                 .requestDto(requestDto)
                 .user(user)
                 .build();
 
+        card.setId(id);
+
         cardRepository.save(card);
     }
 
+    @Test
+    void findByUserAndIdSuccessTest() {
+        CardRequestDto requestDto = new CardRequestDto("할일 카드 제목", "할일 카드 내용", true, false);
+        saveSampleCard(1L, requestDto, user);
+
+        Card card = cardRepository.findByUserAndId(user,1L).orElseThrow(
+                () -> new NullPointerException("해당하는 할일 카드가 없습니다.")
+        );
+
+        assertThat(card.getTitle()).isEqualTo(requestDto.getTitle());
+        assertThat(card.getContent()).isEqualTo(requestDto.getContent());
+    }
+
+    @Test
+    void findByUserAndIdFailTest() {
+
+    }
+
+    @Test
+    void findByUserAndTitleTest() {
+
+    }
+
+    @Test
+    void findAllByUserTest() {
+
+    }
+
+    @Test
+    void findAllByVisibleTest() {
+
+    }
 
 }
