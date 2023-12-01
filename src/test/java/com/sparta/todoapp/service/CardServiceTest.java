@@ -250,7 +250,6 @@ class CardServiceTest {
     }
 
     void checkCard(User user, Long id) {
-        // given
         List<Card> cardList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 " + i, "할일 카드 내용 " + i, true, false);
@@ -261,10 +260,7 @@ class CardServiceTest {
 
         given(cardRepository.findAllByUser(user)).willReturn(cardList);
 
-        given(cardRepository.findById(anyLong())).willReturn(Optional.of(cardList.get(2)));
-
-        // when
-        Card myCard = cardService.checkCard(id, user);
+        given(cardRepository.findById(id)).willReturn(Optional.of(cardList.get(2)));
     }
 
     @Test
