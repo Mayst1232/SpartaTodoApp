@@ -207,6 +207,7 @@ class CardServiceTest {
     }
 
     @Test
+    @DisplayName("수정/삭제 하려는 카드가 자신의 할일 카드일때 성공 테스트")
     Card checkCardTestSuccess(Long id, User user) {
         // given
         List<Card> cardList = new ArrayList<>();
@@ -231,6 +232,7 @@ class CardServiceTest {
     }
 
     @Test
+    @DisplayName("수정/삭제 하려는 카드가 존재하지 않을 때 실패 테스트 예외 처리")
     void checkCardTestFailCardListIsEmpty() {
         // given
         List<Card> cardList = new ArrayList<>();
@@ -248,6 +250,7 @@ class CardServiceTest {
     }
 
     @Test
+    @DisplayName("수정/삭제 하려는 카드가 자신의 것이 아닐 때 실패 테스트 예외 처리")
     void checkCardTestFailCardIsNotMine() {
         // given
         List<Card> cardList = new ArrayList<>();
