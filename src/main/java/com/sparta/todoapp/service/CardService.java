@@ -30,7 +30,6 @@ public class CardService {
         } else {
 
             var op = cardRepository.findByUserAndId(user, id);
-            System.out.println("여기 들어오니?");
             card = op.orElseThrow(
                     () -> new NullPointerException("해당하는 카드가 없습니다.")
             );
