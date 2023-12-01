@@ -25,5 +25,34 @@ class CommentRepositoryTest extends RepositoryTest {
     @Autowired
     CardRepository cardRepository;
 
+    User user = new User("hwang","1234");
+    Card card = Mockito.spy(new Card());
+
+    @BeforeEach
+    void setUp() {
+        // given
+        user.setId(1L);
+        userRepository.save(user);
+
+        card.setId(1L);
+        card.setTitle("제목");
+        card.setContent("내용");
+        card.setComplete(false);
+        card.setVisible(true);
+        card.setUser(user);
+        cardRepository.save(card);
+
+        for(int i = 0; i < 10; i++){
+            Comment comment = Comment.builder()
+                    .content("댓글 내용" + i)
+                    .writer(user.getUsername())
+                    .user(user)
+                    .card(card)
+                    .build();
+
+            commentRepository.save(comment);
+        }
+    }
+
 
 }
