@@ -3,16 +3,11 @@ package com.sparta.todoapp.repository;
 import com.sparta.todoapp.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class UserRepositoryTest extends RepositoryTest{
@@ -58,7 +53,7 @@ class UserRepositoryTest extends RepositoryTest{
 
     @Test
     @DisplayName("찾고있는 username으로 user 데이터 찾아오기 실패")
-    public void findByUsernameFailTest() throws IllegalAccessException {
+    public void findByUsernameFailTest() {
         // given
         User user = User.builder()
                 .username("test")
