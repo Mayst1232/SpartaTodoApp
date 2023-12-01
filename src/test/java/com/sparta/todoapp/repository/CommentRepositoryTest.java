@@ -45,7 +45,7 @@ class CommentRepositoryTest extends RepositoryTest {
         for(int i = 0; i < 10; i++){
             Comment comment = Comment.builder()
                     .content("댓글 내용" + i)
-                    .writer(user.getUsername())
+                    .writer(user.getUsername() + i)
                     .user(user)
                     .card(card)
                     .build();
@@ -61,6 +61,16 @@ class CommentRepositoryTest extends RepositoryTest {
 
         // then
         assertThat(commentList).hasSize(10);
-        assertThat(commentList).map(Comment::getWriter).contains(user.getUsername());
+        assertThat(commentList).map(Comment::getWriter).contains(user.getUsername()+1, user.getUsername()+2);
+    }
+
+    @Test
+    void findAllByUserTest(){
+        // when
+        List<Comment> commentList = commentRepository.findAllByUser(user);
+
+        // then
+        assertThat(commentList).hasSize(10);
+        assertThat(commentList).map(Comment::getWriter).contains(user.getUsername()+1, user.getUsername()+2, user.getUsername()+3);
     }
 }
