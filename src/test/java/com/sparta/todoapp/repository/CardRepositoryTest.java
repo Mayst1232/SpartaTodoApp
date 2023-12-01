@@ -90,7 +90,13 @@ class CardRepositoryTest extends RepositoryTest {
 
     @Test
     void findByUserAndTitleTest() {
+        CardRequestDto requestDto = new CardRequestDto("할일 카드 제목", "할일 카드 내용", true, false);
+        saveSampleCard(1L, requestDto, user);
 
+        Card card = cardRepository.findByUserAndTitle(user, requestDto.getTitle());
+
+        assertThat(card.getTitle()).isEqualTo(requestDto.getTitle());
+        assertThat(card.getContent()).isEqualTo(requestDto.getContent());
     }
 
     @Test
