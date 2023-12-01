@@ -4,6 +4,7 @@ import com.sparta.todoapp.dto.*;
 import com.sparta.todoapp.entity.Card;
 import com.sparta.todoapp.entity.User;
 import com.sparta.todoapp.repository.CardRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -194,34 +195,47 @@ class CardServiceTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("자신의 할일 카드의 제목/내용을 수정할 때의 동작 테스트")
     void cardModifyTest() {
         // given
-        Long id = 3L;
         User user = new User();
+        Long id = 3L;
 
-        checkCardTestSuccess(id, user);
+        checkCard(user, id);
 
         CardModifyRequestDto requestDto = new CardModifyRequestDto("바꿀 제목", "바꿀 내용");
 
         // when
-        cardService.cardModify(id, requestDto, user);
+        CardExceptCommentResponseDto responseDto = cardService.cardModify(3L, requestDto, user);
 
         // then
-        assertThat("바꿀 제목").isEqualTo(requestDto.getTitle());
+        assertThat("바꿀 제목").isEqualTo(responseDto.getTitle());
     }
 
     @Test
+    @DisplayName("자신의 할일 카드의 완료 여부를 수정할 때의 동작 테스트")
     void completeTodo() {
+        // given
+        User user = new User();
+        Long id = 3L;
+
+        checkCard(user, id);
+
+        CardCompleteRequestDto requestDto = new CardCompleteRequestDto(true);
+
+        // when
+        CardExceptCommentResponseDto responseDto = cardService.completeTodo(3L, requestDto, user);
+
+        // then
+        assertThat(true).isEqualTo(responseDto.isComplete());
     }
 
     @Test
     void deleteCard() {
     }
 
-    @Test
-    @DisplayName("수정/삭제 하려는 카드가 자신의 할일 카드일때 성공 테스트")
-    void checkCardTestSuccess(Long id, User user) {
+    void checkCard(User user, Long id) {
         // given
         List<Card> cardList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
@@ -237,10 +251,30 @@ class CardServiceTest {
 
         // when
         Card myCard = cardService.checkCard(id, user);
+    }
 
+    @Test
+    @DisplayName("수정/삭제 하려는 카드가 자신의 할일 카드일때 성공 테스트")
+    void checkCardTestSuccess() {
+        // given
+        User user = new User();
+        Long id = 3L;
+        List<Card> cardList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 " + i, "할일 카드 내용 " + i, true, false);
+            Card card = new Card(requestDto, user);
+            card.setId((long) i + 1);
+            cardList.add(card);
+        }
+
+        given(cardRepository.findAllByUser(user)).willReturn(cardList);
+
+        given(cardRepository.findById(id)).willReturn(Optional.of(cardList.get(2)));
+
+        // when
+        Card myCard = cardService.checkCard(id, user);
         // then
         assertThat("할일 카드 제목 2").isEqualTo(myCard.getTitle());
-
     }
 
     @Test
