@@ -1,9 +1,6 @@
 package com.sparta.todoapp.service;
 
-import com.sparta.todoapp.dto.CardExceptCommentResponseDto;
-import com.sparta.todoapp.dto.CardRequestDto;
-import com.sparta.todoapp.dto.CardResponseDto;
-import com.sparta.todoapp.dto.CardTitleRequestDto;
+import com.sparta.todoapp.dto.*;
 import com.sparta.todoapp.entity.Card;
 import com.sparta.todoapp.entity.User;
 import com.sparta.todoapp.repository.CardRepository;
@@ -56,7 +53,7 @@ class CardServiceTest {
     @DisplayName("할일 카드의 단건 조회하는 기능 중 작성자가 visible을 false로 설정하여도 자기 자신은 할일 카드를 확인할 수 있습니다.")
     void getCardsSuccessTest() {
         // given
-        CardRequestDto requestDto = new CardRequestDto("찾은 카드 제목", "찾은 카드 내용",false, false);
+        CardRequestDto requestDto = new CardRequestDto("찾은 카드 제목", "찾은 카드 내용", false, false);
 
         User findUser = new User();
         findUser.setId(100L);
@@ -75,7 +72,7 @@ class CardServiceTest {
 
     @Test
     @DisplayName("할일 카드의 단건 조회 중 작성자가 visible을 false로 설정해놓으면 다른 사람은 그 카드를 확인할 수 없습니다.")
-    void getCardsFailTest(){
+    void getCardsFailTest() {
         // given
         CardRequestDto requestDto = new CardRequestDto("찾은 카드 제목", "찾은 카드 내용", false, false);
         User createUser = new User();
@@ -101,10 +98,10 @@ class CardServiceTest {
         List<Card> cardList = new ArrayList<>();
         User user = new User("Hwang", "1234");
 
-        for(int i = 0; i < 4; i++){
-            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 " + i, "할일 카드 내용 " +i, i % 2 == 0, false);
+        for (int i = 0; i < 4; i++) {
+            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 " + i, "할일 카드 내용 " + i, i % 2 == 0, false);
             Card card = new Card(requestDto, user);
-            if(card.isVisible()){
+            if (card.isVisible()) {
                 cardList.add(card);
             }
         }
@@ -125,8 +122,8 @@ class CardServiceTest {
         User user = new User();
         List<Card> cardList = new ArrayList<>();
 
-        for(int i = 0; i < 4; i++){
-            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 ", "할일 카드 내용 " +i, true, false);
+        for (int i = 0; i < 4; i++) {
+            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 ", "할일 카드 내용 " + i, true, false);
             Card card = new Card(requestDto, user);
             cardList.add(card);
         }
@@ -149,8 +146,8 @@ class CardServiceTest {
         User user = new User();
         List<Card> cardList = new ArrayList<>();
 
-        for(int i = 0; i < 4; i++){
-            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 ", "할일 카드 내용 " +i, true, false);
+        for (int i = 0; i < 4; i++) {
+            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 ", "할일 카드 내용 " + i, true, false);
             Card card = new Card(requestDto, user);
             cardList.add(card);
         }
@@ -173,8 +170,8 @@ class CardServiceTest {
         User user = new User();
         List<Card> cardList = new ArrayList<>();
 
-        for(int i = 0; i < 4; i++){
-            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 ", "할일 카드 내용 " +i, false, false);
+        for (int i = 0; i < 4; i++) {
+            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 ", "할일 카드 내용 " + i, false, false);
             Card card = new Card(requestDto, user);
             cardList.add(card);
         }
@@ -184,7 +181,7 @@ class CardServiceTest {
         given(cardRepository.findAllByTitle(titleRequestDto.getTitle()))
                 .willReturn(cardList);
 
-        for(Card card : cardList){
+        for (Card card : cardList) {
             given(cardRepository.findByUserAndTitle(user, titleRequestDto.getTitle()))
                     .willReturn(card);
         }
@@ -198,6 +195,7 @@ class CardServiceTest {
 
     @Test
     void cardModify() {
+
     }
 
     @Test
@@ -209,6 +207,79 @@ class CardServiceTest {
     }
 
     @Test
-    void checkCard() {
+    Card checkCardTestSuccess(Long id, User user) {
+        // given
+        List<Card> cardList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 " + i, "할일 카드 내용 " + i, true, false);
+            Card card = new Card(requestDto, user);
+            card.setId((long) i + 1);
+            cardList.add(card);
+        }
+
+        given(cardRepository.findAllByUser(user)).willReturn(cardList);
+
+        given(cardRepository.findById(id)).willReturn(Optional.of(cardList.get(2)));
+
+        // when
+        Card myCard = cardService.checkCard(id, user);
+
+        // then
+        assertThat("할일 카드 제목 2").isEqualTo(myCard.getTitle());
+
+        return myCard;
+    }
+
+    @Test
+    void checkCardTestFailCardListIsEmpty() {
+        // given
+        List<Card> cardList = new ArrayList<>();
+        User user = new User();
+        Long id = 3L;
+
+        given(cardRepository.findAllByUser(user)).willReturn(cardList);
+
+        // when
+        Exception exception = assertThrows(NullPointerException.class,
+                () -> cardService.checkCard(id, user));
+
+        // then
+        assertThat("작성한 카드가 존재하지 않습니다.").isEqualTo(exception.getMessage());
+    }
+
+    @Test
+    void checkCardTestFailCardIsNotMine() {
+        // given
+        List<Card> cardList = new ArrayList<>();
+        User cardOwner = new User();
+        Long id = 1L;
+        for (int i = 0; i < 2; i++) {
+            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 " + i, "할일 카드 내용 " + i, true, false);
+            Card card = new Card(requestDto, cardOwner);
+            card.setId((long) i + 1);
+            cardList.add(card);
+        }
+
+        List<Card> myCardList = new ArrayList<>();
+        User itsMe = new User();
+        for (int i = 2; i < 4; i++) {
+            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 " + i, "할일 카드 내용 " + i, true, false);
+            Card card = new Card(requestDto, itsMe);
+            card.setId((long) i + 1);
+            myCardList.add(card);
+            cardList.add(card);
+        }
+
+
+        given(cardRepository.findAllByUser(itsMe)).willReturn(myCardList);
+
+        given(cardRepository.findById(id)).willReturn(Optional.of(cardList.get(0)));
+
+        // when
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> cardService.checkCard(id, itsMe));
+
+        // then
+        assertThat("작성자만이 카드를 수정/삭제 할 수 있습니다.").isEqualTo(exception.getMessage());
     }
 }
