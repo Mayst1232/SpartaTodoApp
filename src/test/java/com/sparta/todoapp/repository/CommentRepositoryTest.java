@@ -30,7 +30,7 @@ class CommentRepositoryTest extends RepositoryTest {
     Card card = Mockito.spy(new Card());
 
     @BeforeEach
-    @DisplayName("코멘트 조회를 위하여 사전에 미리 데이터를 넣어주는 작업")
+    @DisplayName("코멘트 조회를 위하여 사전에 미리 데이터를 넣어주는 작업 및 commentRepository.save 동작 테스트")
     void setUp() {
         // given
         user.setId(1L);
@@ -52,7 +52,9 @@ class CommentRepositoryTest extends RepositoryTest {
                     .card(card)
                     .build();
 
-            commentRepository.save(comment);
+            Comment saveComment = commentRepository.save(comment);    // commentRepository.save 동작
+
+            assertThat(saveComment.getContent()).isEqualTo(comment.getContent()); // save 동작 테스트
         }
     }
 
