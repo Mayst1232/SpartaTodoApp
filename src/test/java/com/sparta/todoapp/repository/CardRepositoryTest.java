@@ -73,7 +73,19 @@ class CardRepositoryTest extends RepositoryTest {
 
     @Test
     void findByUserAndIdFailTest() {
+        CardRequestDto requestDto = new CardRequestDto("할일 카드 제목", "할일 카드 내용", true, false);
+        saveSampleCard(1L, requestDto, user);
 
+        User findUser = new User();
+        findUser.setId(3L);
+
+        Exception exception = assertThrows(NullPointerException.class,
+                () -> cardRepository.findByUserAndId(findUser,1L).orElseThrow(
+                        () -> new NullPointerException("해당하는 할일 카드가 없습니다.")
+                )
+        );
+
+        assertThat("해당하는 할일 카드가 없습니다.").isEqualTo(exception.getMessage());
     }
 
     @Test
