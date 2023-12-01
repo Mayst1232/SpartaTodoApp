@@ -2,10 +2,14 @@ package com.sparta.todoapp.repository;
 
 import com.sparta.todoapp.dto.CardRequestDto;
 import com.sparta.todoapp.entity.Card;
+import com.sparta.todoapp.entity.Comment;
 import com.sparta.todoapp.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -101,12 +105,17 @@ class CardRepositoryTest extends RepositoryTest {
 
     @Test
     void findAllByUserTest() {
+        for(int i = 1; i < 6; i++){
+            CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 " + i, "할일 카드 내용" + i, true, false);
+            saveSampleCard((long) i, requestDto, user);
+        }
 
+        List<Card> cardList = cardRepository.findAllByUser(user);
+
+        assertThat(cardList).hasSize(5);
+        assertThat(cardList).map(Card::getTitle).contains("할일 카드 제목 1", "할일 카드 제목 2", "할일 카드 제목 3", "할일 카드 제목 4", "할일 카드 제목 5");
     }
 
-    @Test
-    void findAllByVisibleTest() {
 
-    }
 
 }
