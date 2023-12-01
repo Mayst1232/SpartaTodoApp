@@ -5,6 +5,7 @@ import com.sparta.todoapp.entity.Card;
 import com.sparta.todoapp.entity.Comment;
 import com.sparta.todoapp.entity.User;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,13 @@ class CommentRepositoryTest extends RepositoryTest {
     UserRepository userRepository;
 
     @Autowired
-    CardRepository cardRepository;
+    CardRepository cardRepository; // comment 테이블이 user와 card를 fk로 가지고 있기 때문에 저장해주기 위한 Repository들 추가
 
     User user = new User("hwang","1234");
     Card card = Mockito.spy(new Card());
 
     @BeforeEach
+    @DisplayName("코멘트 조회를 위하여 사전에 미리 데이터를 넣어주는 작업")
     void setUp() {
         // given
         user.setId(1L);
@@ -55,9 +57,10 @@ class CommentRepositoryTest extends RepositoryTest {
     }
 
     @Test
+    @DisplayName("하나의 할일 카드 안에 들어있는 모든 댓글 조회하는 기능 테스트 (없어도 빈칸으로 조회할 수 있다.)")
     void findAllByCard_IdTest(){
         // when
-        List<Comment> commentList = commentRepository.findAllByCard_Id(1L);
+        List<Comment> commentList = commentRepository.findAllByCard_Id(1L); // commentRepository의 findAllByCard_Id(Long id)를 이용하여 전체 댓글 조회
 
         // then
         assertThat(commentList).hasSize(10);
@@ -65,12 +68,14 @@ class CommentRepositoryTest extends RepositoryTest {
     }
 
     @Test
+    @DisplayName("유저가 작성한 모든 댓글 조회하는 기능 테스트 (없어도 빈칸으로 조회할 수 있다.)")
     void findAllByUserTest(){
         // when
-        List<Comment> commentList = commentRepository.findAllByUser(user);
+        List<Comment> commentList = commentRepository.findAllByUser(user); // commentRepository의 findAllByUser(user)를 이용하여 전체 댓글 조회
 
         // then
-        assertThat(commentList).hasSize(10);
+        assertThat(commentList).hasSize(10);    // commentList가 10개의 데이터를 가지고 있는지 체크
         assertThat(commentList).map(Comment::getWriter).contains(user.getUsername()+1, user.getUsername()+2, user.getUsername()+3);
+        // 이 commentList가 작성자로 user.getUsername()+1, user.getUsername()+2, user.getUsername()+3을 가지고 있는지 체크
     }
 }
