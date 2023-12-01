@@ -54,5 +54,13 @@ class CommentRepositoryTest extends RepositoryTest {
         }
     }
 
+    @Test
+    void findAllByCard_IdTest(){
+        // when
+        List<Comment> commentList = commentRepository.findAllByCard_Id(1L);
 
+        // then
+        assertThat(commentList).hasSize(10);
+        assertThat(commentList).map(Comment::getWriter).contains(user.getUsername());
+    }
 }
