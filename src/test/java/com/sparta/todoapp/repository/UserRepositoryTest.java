@@ -14,8 +14,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
-@ActiveProfiles("test")     // application-test.properties에 저장되어있는 db와 연동
+
 class UserRepositoryTest extends RepositoryTest{
     @Autowired
     private UserRepository userRepository;
