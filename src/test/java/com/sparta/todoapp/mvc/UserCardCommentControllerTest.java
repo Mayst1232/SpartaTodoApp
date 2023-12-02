@@ -30,6 +30,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.security.Principal;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -176,4 +177,29 @@ class UserCardCommentControllerTest {
                 )
                 .andExpect(status().isOk());
     }
+
+
+    @Test
+    @DisplayName("카드 단건 조회 성공 테스트")
+    void getCardsSuccessTest() throws Exception {
+        this.mockUserSetup();
+
+        mvc.perform(get("/api/cards/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ) .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("카드 단건 조회 실패 테스트")
+    void getCardsFailTestCardIsNotExist() throws Exception {
+        this.mockUserSetup();
+
+        given(cardService.getCards(any(),any())).willThrow(NullPointerException.class);
+        mvc.perform(get("/api/cards/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ) .andExpect(status().isBadRequest());
+    }
+
 }
