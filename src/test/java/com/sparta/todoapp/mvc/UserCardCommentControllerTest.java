@@ -1,11 +1,13 @@
 package com.sparta.todoapp.mvc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.todoapp.config.WebSecurityConfig;
 import com.sparta.todoapp.controller.CardController;
 import com.sparta.todoapp.controller.CommentController;
 import com.sparta.todoapp.controller.UserController;
 import com.sparta.todoapp.dto.CardRequestDto;
+import com.sparta.todoapp.dto.CardTitleRequestDto;
 import com.sparta.todoapp.dto.SignupRequestDto;
 import com.sparta.todoapp.entity.User;
 import com.sparta.todoapp.security.UserDetailsImpl;
@@ -180,7 +182,7 @@ class UserCardCommentControllerTest {
 
 
     @Test
-    @DisplayName("카드 단건 조회 성공 테스트")
+    @DisplayName("카드 단건 조회 기능 성공 테스트")
     void getCardsSuccessTest() throws Exception {
         this.mockUserSetup();
 
@@ -191,7 +193,7 @@ class UserCardCommentControllerTest {
     }
 
     @Test
-    @DisplayName("카드 단건 조회 실패 테스트")
+    @DisplayName("카드 단건 조회 기능 실패 테스트")
     void getCardsFailTestCardIsNotExist() throws Exception {
         this.mockUserSetup();
 
@@ -203,10 +205,44 @@ class UserCardCommentControllerTest {
     }
 
     @Test
-    @DisplayName("모든 카드 조회 메소드")
+    @DisplayName("모든 카드 조회 기능 테스트")
     void getAllCardsTest() throws Exception {
         mvc.perform(get("/api/cards"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("제목에 따라 해당하는 카드를 조회해오는 기능 테스트")
+    void getTitleCardsSuccessTest() throws Exception {
+        this.mockUserSetup();
+        CardTitleRequestDto requestDto = new CardTitleRequestDto("찾는 제목");
+
+        String json = objectMapper.writeValueAsString(requestDto);
+
+        mvc.perform(get("/api/cards/title")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("제목에 따라 해당하는 카드를 조회해오는 기능 실패 테스트")
+    void getTitleCardsFailTestCardIsNotExist() throws Exception {
+        this.mockUserSetup();
+        CardTitleRequestDto requestDto = new CardTitleRequestDto("찾는 제목");
+
+        String json = objectMapper.writeValueAsString(requestDto);
+
+        given(cardService.getTitleCards(any(),any())).willThrow(NullPointerException.class);
+
+        mvc.perform(get("/api/cards/title")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isBadRequest());
     }
 
 }
