@@ -6,10 +6,7 @@ import com.sparta.todoapp.config.WebSecurityConfig;
 import com.sparta.todoapp.controller.CardController;
 import com.sparta.todoapp.controller.CommentController;
 import com.sparta.todoapp.controller.UserController;
-import com.sparta.todoapp.dto.CardModifyRequestDto;
-import com.sparta.todoapp.dto.CardRequestDto;
-import com.sparta.todoapp.dto.CardTitleRequestDto;
-import com.sparta.todoapp.dto.SignupRequestDto;
+import com.sparta.todoapp.dto.*;
 import com.sparta.todoapp.entity.User;
 import com.sparta.todoapp.security.UserDetailsImpl;
 import com.sparta.todoapp.service.CardService;
@@ -279,4 +276,72 @@ class UserCardCommentControllerTest {
         ).andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DisplayName("게시물 수정하는 기능 유저가 존재하지 않는 실패 테스트")
+    void cardModifyFailTestCardIsNotMine() throws Exception {
+        this.mockUserSetup();
+        CardModifyRequestDto requestDto = new CardModifyRequestDto("수정 제목", "수정 내용");
+
+        given(cardService.cardModify(any(),any(),any())).willThrow(IllegalArgumentException.class);
+        String json = objectMapper.writeValueAsString(requestDto);
+
+        mvc.perform(patch("/api/cards/1")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("할일 카드를 완료 했을 때 완료시키는 기능 성공 테스트")
+    void completeTodoSuccessTest() throws Exception {
+        this.mockUserSetup();
+        CardCompleteRequestDto requestDto = new CardCompleteRequestDto(true);
+
+        String json = objectMapper.writeValueAsString(requestDto);
+
+        mvc.perform(patch("/api/cards/complete/1")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 카드의 완료 여부를 수정할 경우 기능 실패 테스트")
+    void completeTodoFailTestCardIsNotExsit() throws Exception {
+        this.mockUserSetup();
+        CardCompleteRequestDto requestDto = new CardCompleteRequestDto(true);
+
+        String json = objectMapper.writeValueAsString(requestDto);
+
+        given(cardService.completeTodo(any(),any(),any())).willThrow(NullPointerException.class);
+
+        mvc.perform(patch("/api/cards/complete/1")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 카드의 완료 여부를 수정할 경우 기능 실패 테스트")
+    void completeTodoFailTestCardIsNotMine() throws Exception {
+        this.mockUserSetup();
+        CardCompleteRequestDto requestDto = new CardCompleteRequestDto(true);
+
+        String json = objectMapper.writeValueAsString(requestDto);
+
+        given(cardService.completeTodo(any(),any(),any())).willThrow(IllegalArgumentException.class);
+
+        mvc.perform(patch("/api/cards/complete/1")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isBadRequest());
+    }
 }
