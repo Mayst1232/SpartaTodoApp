@@ -1,10 +1,12 @@
 package com.sparta.todoapp.mvc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.todoapp.config.WebSecurityConfig;
 import com.sparta.todoapp.controller.CardController;
 import com.sparta.todoapp.controller.CommentController;
 import com.sparta.todoapp.controller.UserController;
+import com.sparta.todoapp.dto.CardRequestDto;
 import com.sparta.todoapp.dto.SignupRequestDto;
 import com.sparta.todoapp.entity.User;
 import com.sparta.todoapp.security.UserDetailsImpl;
@@ -35,6 +37,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -156,5 +159,26 @@ class UserControllerTest {
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("새로운 카드 생성하는 기능 테스트")
+    void createCardSuccessTest() throws Exception {
+        this.mockUserSetup();
+        String title = "카드 제목";
+        String content = "카드 내용";
+        boolean visible = true;
+        boolean complete = false;
+        CardRequestDto requestDto = new CardRequestDto(title, content, visible, complete);
+
+        String cardInfo = objectMapper.writeValueAsString(requestDto);
+
+        mvc.perform(post("/api/cards")
+                .content(cardInfo)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+                )
+                .andExpect(status().isOk());
     }
 }
