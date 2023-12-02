@@ -344,4 +344,41 @@ class UserCardCommentControllerTest {
                 .principal(mockPrincipal)
         ).andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("할일 카드를 삭제하는 기능 테스트 성공")
+    void deleteCardTestSuccess() throws Exception {
+        this.mockUserSetup();
+
+        mvc.perform(delete("/api/cards/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 할일 카드 삭제 시도 시 테스트 실패")
+    void deleteCardTestFailCardIsNotExist() throws Exception {
+        this.mockUserSetup();
+
+        doThrow(NullPointerException.class).when(cardService).deleteCard(any(), any());
+
+        mvc.perform(delete("/api/cards/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("자신의 카드가 아닌 카드를 삭제 할 때 삭제 기능 테스트 실패")
+    void deleteCardTestFailCardIsNotMine() throws Exception {
+        this.mockUserSetup();
+
+        doThrow(IllegalArgumentException.class).when(cardService).deleteCard(any(), any());
+
+        mvc.perform(delete("/api/cards/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isBadRequest());
+    }
 }
