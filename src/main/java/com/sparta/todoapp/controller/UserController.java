@@ -40,7 +40,7 @@ public class UserController {
             String message = "가입에 성공했습니다";
             return ResponseEntity.ok().body(new StatusResponseDto(message, HttpStatus.OK.value()));
         } catch (IllegalArgumentException ex){
-            return ResponseEntity.badRequest().body(new StatusResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value()));
+            return ResponseEntity.badRequest().body(new StatusResponseDto(ex.getMessage(), HttpStatus.CONFLICT.value()));
         }
     }
 }
