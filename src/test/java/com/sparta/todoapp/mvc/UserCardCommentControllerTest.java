@@ -202,4 +202,11 @@ class UserCardCommentControllerTest {
         ) .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DisplayName("모든 카드 조회 메소드")
+    void getAllCardsTest() throws Exception {
+        mvc.perform(get("/api/cards"))
+                .andExpect(status().isOk());
+    }
+
 }
