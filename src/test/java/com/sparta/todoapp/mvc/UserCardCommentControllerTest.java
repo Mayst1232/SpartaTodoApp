@@ -6,6 +6,7 @@ import com.sparta.todoapp.config.WebSecurityConfig;
 import com.sparta.todoapp.controller.CardController;
 import com.sparta.todoapp.controller.CommentController;
 import com.sparta.todoapp.controller.UserController;
+import com.sparta.todoapp.dto.CardModifyRequestDto;
 import com.sparta.todoapp.dto.CardRequestDto;
 import com.sparta.todoapp.dto.CardTitleRequestDto;
 import com.sparta.todoapp.dto.SignupRequestDto;
@@ -35,8 +36,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -238,6 +238,40 @@ class UserCardCommentControllerTest {
         given(cardService.getTitleCards(any(),any())).willThrow(NullPointerException.class);
 
         mvc.perform(get("/api/cards/title")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    @DisplayName("게시물 수정하는 기능 성공 테스트")
+    void cardModifySuccessTest() throws Exception {
+        this.mockUserSetup();
+        CardModifyRequestDto requestDto = new CardModifyRequestDto("수정 제목", "수정 내용");
+
+        String json = objectMapper.writeValueAsString(requestDto);
+
+        mvc.perform(patch("/api/cards/1")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("게시물 수정하는 기능 카드가 존재하지 않아 실패 테스트")
+    void cardModifyFailTestCardIsNotExist() throws Exception {
+        this.mockUserSetup();
+        CardModifyRequestDto requestDto = new CardModifyRequestDto("수정 제목", "수정 내용");
+
+        given(cardService.cardModify(any(),any(),any())).willThrow(NullPointerException.class);
+        String json = objectMapper.writeValueAsString(requestDto);
+
+        mvc.perform(patch("/api/cards/1")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
