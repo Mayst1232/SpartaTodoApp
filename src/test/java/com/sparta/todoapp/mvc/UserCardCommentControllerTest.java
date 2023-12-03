@@ -87,12 +87,14 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("회원가입 요청 기능 테스트")
     void signupSuccessTest() throws Exception {
+        // given
         SignupRequestDto requestDto = new SignupRequestDto("hwang1234","qwer1234");
 
         String json = objectMapper.writeValueAsString(requestDto);
 
         System.out.println(json);
 
+        // when - then
         mvc.perform(post("/api/user/signup")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -104,10 +106,12 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("회원가입 요청 시 username 혹은 password 필드가 비어있을 때 예외처리 테스트")
     void signupFailTestFieldIsEmpty() throws Exception {
+        // given
         SignupRequestDto requestDto = new SignupRequestDto("hwang1234","");
         String expectByMessage = "$.[?(@.message == '%s')]";
         String json = objectMapper.writeValueAsString(requestDto);
 
+        // when - then
         mvc.perform(post("/api/user/signup")
                     .content(json)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -119,6 +123,7 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("회원가입 요청 시 중복된 username으로 가입 시도할 때 예외처리 테스트")
     void signupFailTestDuplicateUser() throws Exception {
+        // givne
         SignupRequestDto requestDto = new SignupRequestDto("hwang1234","qwer1234");
         String expectByStatus = "$.[?(@.status == '%d')]";
         String json = objectMapper.writeValueAsString(requestDto);
@@ -129,27 +134,32 @@ class UserCardCommentControllerTest {
         );
 
         doThrow(IllegalArgumentException.class).when(userService).signup(any());
+
+        // when - then
         mvc.perform(post("/api/user/signup")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
-
         ).andExpect(jsonPath(expectByStatus, 409).exists());
     }
 
     @Test
     @DisplayName("회원가입 요청 시 유효하지 않은 username / password로 가입 시도할 때 예외처리 테스트")
     void signupFailTestNotValidData() throws Exception {
+        // given
         SignupRequestDto requestDto = new SignupRequestDto("Lee", "qwer1234");
         String json = objectMapper.writeValueAsString(requestDto);
 
+        // when - then
         mvc.perform(post("/api/user/signup")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isBadRequest());
 
+        // given
         requestDto = new SignupRequestDto("hwang", "qwer");
         json = objectMapper.writeValueAsString(requestDto);
 
+        // when - then
         mvc.perform(post("/api/user/signup")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -159,6 +169,7 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("새로운 카드 생성하는 기능 테스트")
     void createCardSuccessTest() throws Exception {
+        // givne
         this.mockUserSetup();
         String title = "카드 제목";
         String content = "카드 내용";
@@ -168,6 +179,7 @@ class UserCardCommentControllerTest {
 
         String cardInfo = objectMapper.writeValueAsString(requestDto);
 
+        // when - then
         mvc.perform(post("/api/cards")
                 .content(cardInfo)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -181,8 +193,10 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("카드 단건 조회 기능 성공 테스트")
     void getCardsSuccessTest() throws Exception {
+        // given
         this.mockUserSetup();
 
+        // when - then
         mvc.perform(get("/api/cards/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .principal(mockPrincipal)
@@ -192,9 +206,12 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("카드 단건 조회 기능 실패 테스트")
     void getCardsFailTestCardIsNotExist() throws Exception {
+        // given
         this.mockUserSetup();
 
         given(cardService.getCards(any(),any())).willThrow(NullPointerException.class);
+
+        // when - then
         mvc.perform(get("/api/cards/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .principal(mockPrincipal)
@@ -204,6 +221,7 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("모든 카드 조회 기능 테스트")
     void getAllCardsTest() throws Exception {
+        // when - then
         mvc.perform(get("/api/cards"))
                 .andExpect(status().isOk());
     }
@@ -211,11 +229,13 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("제목에 따라 해당하는 카드를 조회해오는 기능 테스트")
     void getTitleCardsSuccessTest() throws Exception {
+        // given
         this.mockUserSetup();
         CardTitleRequestDto requestDto = new CardTitleRequestDto("찾는 제목");
 
         String json = objectMapper.writeValueAsString(requestDto);
 
+        // when - then
         mvc.perform(get("/api/cards/title")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -227,6 +247,7 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("제목에 따라 해당하는 카드를 조회해오는 기능 실패 테스트")
     void getTitleCardsFailTestCardIsNotExist() throws Exception {
+        // given
         this.mockUserSetup();
         CardTitleRequestDto requestDto = new CardTitleRequestDto("찾는 제목");
 
@@ -234,6 +255,7 @@ class UserCardCommentControllerTest {
 
         given(cardService.getTitleCards(any(),any())).willThrow(NullPointerException.class);
 
+        // when - then
         mvc.perform(get("/api/cards/title")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -246,11 +268,13 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("게시물 수정하는 기능 성공 테스트")
     void cardModifySuccessTest() throws Exception {
+        // given
         this.mockUserSetup();
         CardModifyRequestDto requestDto = new CardModifyRequestDto("수정 제목", "수정 내용");
 
         String json = objectMapper.writeValueAsString(requestDto);
 
+        // when - then
         mvc.perform(patch("/api/cards/1")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -262,12 +286,14 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("게시물 수정하는 기능 카드가 존재하지 않아 실패 테스트")
     void cardModifyFailTestCardIsNotExist() throws Exception {
+        // given
         this.mockUserSetup();
         CardModifyRequestDto requestDto = new CardModifyRequestDto("수정 제목", "수정 내용");
-
-        given(cardService.cardModify(any(),any(),any())).willThrow(NullPointerException.class);
         String json = objectMapper.writeValueAsString(requestDto);
 
+        given(cardService.cardModify(any(),any(),any())).willThrow(NullPointerException.class);
+
+        // when - then
         mvc.perform(patch("/api/cards/1")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -279,12 +305,14 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("게시물 수정하는 기능 유저가 존재하지 않는 실패 테스트")
     void cardModifyFailTestCardIsNotMine() throws Exception {
+        // given
         this.mockUserSetup();
         CardModifyRequestDto requestDto = new CardModifyRequestDto("수정 제목", "수정 내용");
-
-        given(cardService.cardModify(any(),any(),any())).willThrow(IllegalArgumentException.class);
         String json = objectMapper.writeValueAsString(requestDto);
 
+        given(cardService.cardModify(any(),any(),any())).willThrow(IllegalArgumentException.class);
+
+        // when - then
         mvc.perform(patch("/api/cards/1")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -296,11 +324,13 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("할일 카드를 완료 했을 때 완료시키는 기능 성공 테스트")
     void completeTodoSuccessTest() throws Exception {
+        // given
         this.mockUserSetup();
         CardCompleteRequestDto requestDto = new CardCompleteRequestDto(true);
 
         String json = objectMapper.writeValueAsString(requestDto);
 
+        // when - then
         mvc.perform(patch("/api/cards/complete/1")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -312,6 +342,7 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("존재하지 않는 카드의 완료 여부를 수정할 경우 기능 실패 테스트")
     void completeTodoFailTestCardIsNotExsit() throws Exception {
+        // given
         this.mockUserSetup();
         CardCompleteRequestDto requestDto = new CardCompleteRequestDto(true);
 
@@ -319,6 +350,7 @@ class UserCardCommentControllerTest {
 
         given(cardService.completeTodo(any(),any(),any())).willThrow(NullPointerException.class);
 
+        // when - then
         mvc.perform(patch("/api/cards/complete/1")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -330,6 +362,7 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("존재하지 않는 카드의 완료 여부를 수정할 경우 기능 실패 테스트")
     void completeTodoFailTestCardIsNotMine() throws Exception {
+        // given
         this.mockUserSetup();
         CardCompleteRequestDto requestDto = new CardCompleteRequestDto(true);
 
@@ -337,6 +370,7 @@ class UserCardCommentControllerTest {
 
         given(cardService.completeTodo(any(),any(),any())).willThrow(IllegalArgumentException.class);
 
+        // when - then
         mvc.perform(patch("/api/cards/complete/1")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -348,8 +382,10 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("할일 카드를 삭제하는 기능 테스트 성공")
     void deleteCardTestSuccess() throws Exception {
+        // given
         this.mockUserSetup();
 
+        // when - then
         mvc.perform(delete("/api/cards/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .principal(mockPrincipal)
@@ -359,10 +395,12 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("존재하지 않는 할일 카드 삭제 시도 시 테스트 실패")
     void deleteCardTestFailCardIsNotExist() throws Exception {
+        // given
         this.mockUserSetup();
 
         doThrow(NullPointerException.class).when(cardService).deleteCard(any(), any());
 
+        // when - then
         mvc.perform(delete("/api/cards/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .principal(mockPrincipal)
@@ -372,10 +410,12 @@ class UserCardCommentControllerTest {
     @Test
     @DisplayName("자신의 카드가 아닌 카드를 삭제 할 때 삭제 기능 테스트 실패")
     void deleteCardTestFailCardIsNotMine() throws Exception {
+        // given
         this.mockUserSetup();
 
         doThrow(IllegalArgumentException.class).when(cardService).deleteCard(any(), any());
 
+        // when - then
         mvc.perform(delete("/api/cards/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .principal(mockPrincipal)
