@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -49,5 +50,22 @@ class UserServiceTest {
 
         // then
         verify(userRepository, times(1)).save(any());
+    }
+
+    @Test
+    @DisplayName("회원가입 시도 시 username의 중복으로 인한 실패 테스트")
+    void signupFailTestUserNameIsDuplicate() {
+        User user = new User();
+        user.setUsername("hwang1234");
+        // given
+        SignupRequestDto requestDto = new SignupRequestDto("hwang1234", "qwer1234");
+        Mockito.when(passwordEncoder.encode(requestDto.getPassword())).thenReturn(new BCryptPasswordEncoder().encode(requestDto.getPassword()));
+        given(userRepository.findByUsername(requestDto.getUsername())).willReturn(Optional.of(user));
+
+        // when
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> userService.signup(requestDto));
+
+        // then
+        assertThat("중복된 사용자가 존재합니다.").isEqualTo(exception.getMessage());
     }
 }
