@@ -512,4 +512,26 @@ class UserCardCommentControllerTest {
         ).andExpect(status().isOk())
                 .andExpect(jsonPath(expectByMessage, "삭제 성공!").exists());
     }
+
+    @Test
+    @DisplayName("유저가 작성한 댓글이 존재하지 않을 때 수정 기능 실패 테스트 / 수정하려는 댓글이 존재하지 않을 때 수정  기능 실패 테스트")
+    void deleteCommentTestFailCommentIsNotExist() throws Exception {
+        this.mockUserSetup();
+        doThrow(NullPointerException.class).when(commentService).deleteComment(any(), any());
+        mvc.perform(delete("/api/cards/comments/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("수정하려고 하는 댓글이 유저의 것이 아닐 때 삭제 기능 실패 테스트")
+    void deleteCommentTestFailModifyAndDeleteOnlyMine() throws Exception {
+        this.mockUserSetup();
+        doThrow(IllegalArgumentException.class).when(commentService).deleteComment(any(), any());
+        mvc.perform(delete("/api/cards/comments/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isBadRequest());
+    }
 }
