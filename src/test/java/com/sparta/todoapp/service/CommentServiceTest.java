@@ -15,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,4 +69,28 @@ class CommentServiceTest {
 
         assertThat("해당 카드는 존재하지 않습니다.").isEqualTo(exception.getMessage());
     }
+
+    @Test
+    void getCommentsTest() {
+        Card card = new Card();
+        User user = new User();
+        user.setUsername("hwang");
+        List<Comment> commentList = new ArrayList<>();
+
+        for(int i = 0; i < 5; i++){
+            CommentRequestDto requestDto = new CommentRequestDto("댓글 내용 " + i);
+
+            Comment comment = new Comment(requestDto.getContent(), user.getUsername(), user, card);
+            commentList.add(comment);
+        }
+
+        given(commentRepository.findAllByCardId(any())).willReturn(commentList);
+
+        List<CommentResponseDto> commentResponseDtoList = commentService.getComments(card.getId());
+
+        assertThat(commentResponseDtoList).hasSize(5);
+        assertThat(commentResponseDtoList.get(0).getContent()).isEqualTo("댓글 내용 0");
+    }
+
+
 }
