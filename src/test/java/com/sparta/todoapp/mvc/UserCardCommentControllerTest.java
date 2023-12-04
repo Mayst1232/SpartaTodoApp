@@ -7,6 +7,7 @@ import com.sparta.todoapp.controller.CardController;
 import com.sparta.todoapp.controller.CommentController;
 import com.sparta.todoapp.controller.UserController;
 import com.sparta.todoapp.dto.*;
+import com.sparta.todoapp.entity.Comment;
 import com.sparta.todoapp.entity.User;
 import com.sparta.todoapp.security.UserDetailsImpl;
 import com.sparta.todoapp.service.CardService;
@@ -420,5 +421,24 @@ class UserCardCommentControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .principal(mockPrincipal)
         ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("자신의 카드가 아닌 카드를 삭제 할 때 삭제 기능 테스트 실패")
+    void createCommentTestSuccess() throws Exception {
+        // givne
+        this.mockUserSetup();
+        CommentRequestDto requestDto = new CommentRequestDto("댓글 내용");
+
+        String cardInfo = objectMapper.writeValueAsString(requestDto);
+
+        // when - then
+        mvc.perform(post("/api/cards/1/comments")
+                        .content(cardInfo)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .principal(mockPrincipal)
+                )
+                .andExpect(status().isOk());
     }
 }
