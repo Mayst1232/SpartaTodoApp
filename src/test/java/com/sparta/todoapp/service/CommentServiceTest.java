@@ -105,8 +105,46 @@ class CommentServiceTest {
     }
 
     @Test
+    @DisplayName("선택한 댓글 수정 기능 성공 테스트")
+    void modifyCommentTestSuccess() {
+        // given
+        List<Comment> commentList = new ArrayList<>();
+        User user = new User();
+        user.setUsername("hwange");
+        Card card = new Card();
+        card.setId(1L);
+        createComment(commentList, user, card);
+        checkComment(commentList, user);
+        CommentRequestDto requestDto = new CommentRequestDto("변경할 댓글 내용");
+        Comment comment = commentList.get(0);
+
+        // when
+        CommentResponseDto responseDto = commentService.modifyComment(comment.getId(), requestDto, user);
+
+        // then
+        assertThat("변경할 댓글 내용").isEqualTo(responseDto.getContent());
+    }
+
+    void createComment(List<Comment> commentList, User user, Card card) {
+        for(int i = 0; i < 5; i++) {
+            CommentRequestDto requestDto = new CommentRequestDto("댓글 내용 " + i);
+            Comment comment = new Comment(requestDto.getContent(), user.getUsername(), user, card);
+            comment.setId((long) i+1);
+            commentList.add(comment);
+        }
+    }
+
+    void checkComment(List<Comment> commentList, User user) {
+        Comment checkComment = commentList.get(0);
+        given(commentRepository.findAllByUser(user)).willReturn(commentList);
+        given(commentRepository.findById(checkComment.getId())).willReturn(Optional.of(checkComment));
+
+    }
+
+    @Test
     @DisplayName("유저의 코멘트만 수정 / 삭제 할 수 있기 때문에 자신의 코멘트를 찾는 기능 성공 테스트")
     void checkCommentTestSuccess() {
+        // given
         Comment myComment;
         List<Comment> commentList = new ArrayList<>();
         Card card = new Card();
@@ -127,8 +165,10 @@ class CommentServiceTest {
         given(commentRepository.findAllByUser(user)).willReturn(commentList);
         given(commentRepository.findById(checkComment.getId())).willReturn(Optional.of(checkComment));
 
+        // when
         myComment = commentService.checkComment(checkComment.getId(), user);
 
+        // then
         assertThat("댓글 내용 0").isEqualTo(myComment.getContent());
     }
 }
