@@ -23,7 +23,9 @@ public class CommentService {
 
 
     public CommentResponseDto createComments(Long cardId, CommentRequestDto requestDto, User user) {
-        Card card = cardRepository.findById(cardId).orElseThrow(()-> new NullPointerException("해당 카드는 존재하지 않습니다."));
+        Card card = cardRepository.findById(cardId).orElseThrow(
+                ()-> new NullPointerException("해당 카드는 존재하지 않습니다.")
+        );
         Comment comment = commentRepository.save(new Comment(requestDto.getContent(),user.getUsername(), user, card));
         return new CommentResponseDto(comment);
     }
