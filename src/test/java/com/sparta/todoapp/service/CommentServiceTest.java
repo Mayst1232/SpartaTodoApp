@@ -25,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceTest {
@@ -110,7 +112,7 @@ class CommentServiceTest {
         // given
         List<Comment> commentList = new ArrayList<>();
         User user = new User();
-        user.setUsername("hwange");
+        user.setUsername("hwang");
         Card card = new Card();
         card.setId(1L);
         createComment(commentList, user, card);
@@ -123,6 +125,28 @@ class CommentServiceTest {
 
         // then
         assertThat("변경할 댓글 내용").isEqualTo(responseDto.getContent());
+    }
+
+    @Test
+    @DisplayName("선택한 댓글 삭제 기능 성공 테스트")
+    void deleteCommentTestSuccess() {
+        // given
+        List<Comment> commentList = new ArrayList<>();
+        User user = new User();
+        user.setUsername("hwang");
+        Card card = new Card();
+        card.setId(1L);
+
+        createComment(commentList, user, card);
+        checkComment(commentList, user);
+
+        Comment deleteComment = commentList.get(0);
+
+        // when
+        commentService.deleteComment(deleteComment.getId(), user);
+
+        // then
+        verify(commentRepository, times(1)).delete(any());
     }
 
     void createComment(List<Comment> commentList, User user, Card card) {
