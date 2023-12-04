@@ -424,21 +424,44 @@ class UserCardCommentControllerTest {
     }
 
     @Test
-    @DisplayName("자신의 카드가 아닌 카드를 삭제 할 때 삭제 기능 테스트 실패")
+    @DisplayName("조회하고 있는 카드에 댓글 작성 기능 테스트")
     void createCommentTestSuccess() throws Exception {
         // givne
         this.mockUserSetup();
         CommentRequestDto requestDto = new CommentRequestDto("댓글 내용");
 
-        String cardInfo = objectMapper.writeValueAsString(requestDto);
+        String commentInfo = objectMapper.writeValueAsString(requestDto);
 
         // when - then
         mvc.perform(post("/api/cards/1/comments")
-                        .content(cardInfo)
+                        .content(commentInfo)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .principal(mockPrincipal)
                 )
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("조회하고 있는 카드에 댓글 조회 기능 테스트")
+    void getCommnentsTestSuccess() throws Exception {
+        mvc.perform(get("/api/cards/1/comments"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("조회하고 있는 카드 댓글 수정 기능 성공 테스트")
+    void modifyCommentTestSuccess() throws Exception {
+        this.mockUserSetup();
+
+        CommentRequestDto requestDto = new CommentRequestDto("변경 댓글 내용");
+        String commentInfo = objectMapper.writeValueAsString(requestDto);
+
+        mvc.perform(patch("/api/cards/comments/1")
+                .content(commentInfo)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isOk());
     }
 }
