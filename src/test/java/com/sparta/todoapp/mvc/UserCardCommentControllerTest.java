@@ -500,4 +500,16 @@ class UserCardCommentControllerTest {
                 .principal(mockPrincipal)
         ).andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("댓글 삭제 기능 성공 테스트")
+    void deleteCommentTestSuccess() throws Exception {
+        this.mockUserSetup();
+        String expectByMessage = "$.[?(@.message == '%s')]";
+        mvc.perform(delete("/api/cards/comments/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isOk())
+                .andExpect(jsonPath(expectByMessage, "삭제 성공!").exists());
+    }
 }
