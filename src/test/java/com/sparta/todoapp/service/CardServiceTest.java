@@ -197,7 +197,6 @@ class CardServiceTest {
     }
 
     @Test
-    @Disabled
     @DisplayName("자신의 할일 카드의 제목/내용을 수정할 때의 동작 테스트")
     void cardModifyTest() {
         // given

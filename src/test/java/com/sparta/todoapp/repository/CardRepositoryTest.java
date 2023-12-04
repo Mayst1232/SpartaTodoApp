@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,11 +28,10 @@ class CardRepositoryTest extends RepositoryTest {
     @BeforeEach
     @DisplayName("모든 테스트가 시작 전에 할일 카드를 작성할 공통의 User를 갖고 있게 하기 위한 Setup")
     void setUp() {
-        user = Mockito.spy(User.builder()
+        user = User.builder()
                 .username("Hwang")
                 .password("1234")
-                .build());
-        Mockito.when(user.getId()).thenReturn(1L);
+                .build();
         userRepository.save(user);
     }
 
@@ -56,31 +56,25 @@ class CardRepositoryTest extends RepositoryTest {
         assertThat(saveCard.isComplete()).isEqualTo(card.isComplete());
     }
 
-    @DisplayName("전달받는 requestDto와 user로 card Entity에 저장하는 공통적인 메소드를 추출한 부분")
-    void saveSampleCard(Long id,CardRequestDto requestDto, User user){
-        Card card = Card.builder()
-                .requestDto(requestDto)
-                .user(user)
-                .build();
-
-        card.setId(id);
-
-        cardRepository.save(card);
-    }
 
     @Test
     @DisplayName("할일 카드 중 user가 작성한 할일 카드를 찾아오는 기능 성공 테스트")
     void findByUserAndIdSuccessTest() {
         // given
         CardRequestDto requestDto = new CardRequestDto("할일 카드 제목", "할일 카드 내용", true, false);
-        saveSampleCard(1L, requestDto, user);
+        Card card = Card.builder()
+                .requestDto(requestDto)
+                .user(user)
+                .build();
 
-        // when
-        Card card = cardRepository.findByUserAndId(user,1L).orElseThrow(
+        cardRepository.save(card);
+
+        card = cardRepository.findByUser(user).orElseThrow(
                 () -> new NullPointerException("해당하는 할일 카드가 없습니다.")
         );
 
         // then
+        assertThat(card.getUser().getId()).isEqualTo(user.getId());
         assertThat(card.getTitle()).isEqualTo(requestDto.getTitle());
         assertThat(card.getContent()).isEqualTo(requestDto.getContent());
     }
@@ -90,7 +84,12 @@ class CardRepositoryTest extends RepositoryTest {
     void findByUserAndIdFailTest() {
         // given
         CardRequestDto requestDto = new CardRequestDto("할일 카드 제목", "할일 카드 내용", true, false);
-        saveSampleCard(1L, requestDto, user);
+        Card card = Card.builder()
+                .requestDto(requestDto)
+                .user(user)
+                .build();
+
+        cardRepository.save(card);
 
         User findUser = new User();
         findUser.setId(3L);
@@ -111,10 +110,15 @@ class CardRepositoryTest extends RepositoryTest {
     void findByUserAndTitleTest() {
         //given
         CardRequestDto requestDto = new CardRequestDto("할일 카드 제목", "할일 카드 내용", true, false);
-        saveSampleCard(1L, requestDto, user);
+        Card card = Card.builder()
+                .requestDto(requestDto)
+                .user(user)
+                .build();
+
+        cardRepository.save(card);
 
         // when
-        Card card = cardRepository.findByUserAndTitle(user, requestDto.getTitle());
+        card = cardRepository.findByUserAndTitle(user, requestDto.getTitle());
 
         // then
         assertThat(card.getTitle()).isEqualTo(requestDto.getTitle());
@@ -127,7 +131,12 @@ class CardRepositoryTest extends RepositoryTest {
         // given
         for(int i = 1; i < 6; i++){
             CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 " + i, "할일 카드 내용" + i, true, false);
-            saveSampleCard((long) i, requestDto, user);
+            Card card = Card.builder()
+                    .requestDto(requestDto)
+                    .user(user)
+                    .build();
+
+            cardRepository.save(card);
         }
 
         // when
@@ -139,12 +148,17 @@ class CardRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("보여지는 기능이 작동하고 있는 모등 카드를 조회하는 기능 테스트")
+    @DisplayName("보여지는 기능이 작동하고 있는 모든 카드를 조회하는 기능 테스트")
     void findAllByVisibleTest() {
         // given
         for(int i = 1; i < 6; i++){
             CardRequestDto requestDto = new CardRequestDto("할일 카드 제목 " + i, "할일 카드 내용 " + i, i % 2 == 0, false);
-            saveSampleCard((long) i, requestDto, user);
+            Card card = Card.builder()
+                    .requestDto(requestDto)
+                    .user(user)
+                    .build();
+
+            cardRepository.save(card);
         }
 
         // when
@@ -153,6 +167,7 @@ class CardRepositoryTest extends RepositoryTest {
         // then
         assertThat(cardList).hasSize(2);
         assertThat(cardList).map(Card::getTitle).contains("할일 카드 제목 2", "할일 카드 제목 4");
+        // extract << 다음에 사용해 볼 예정
     }
 
 }

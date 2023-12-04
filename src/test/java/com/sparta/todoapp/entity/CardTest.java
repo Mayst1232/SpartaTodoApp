@@ -95,8 +95,8 @@ class CardTest {
         card.updateCard(modifyRequestDto);
 
         // then
-        assertThat(card.getTitle()).isEqualTo(modifyRequestDto.getContent());
-        assertThat(card.getContent()).isNotEqualTo(modifyRequestDto.getTitle());
+        assertThat(card.getContent()).isEqualTo(modifyRequestDto.getContent());
+        assertThat(card.getTitle()).isNotEqualTo(modifyRequestDto.getTitle());
     }
 
     @DisplayName("카드 내의 정보를 바꿀 때 제목과 내용 둘 다 바꾸고 싶을 경우를 확인합니다.")

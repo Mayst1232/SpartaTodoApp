@@ -29,7 +29,7 @@ public class CommentService {
     }
 
     public List<CommentResponseDto> getComments(Long id) {
-        List<Comment> commentList = commentRepository.findAllByCard_Id(id);
+        List<Comment> commentList = commentRepository.findAllByCardId(id);
         List<CommentResponseDto> responseDtoList = new ArrayList<>();
 
         for (Comment comment : commentList) {

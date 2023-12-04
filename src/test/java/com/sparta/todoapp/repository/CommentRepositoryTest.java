@@ -58,9 +58,9 @@ class CommentRepositoryTest extends RepositoryTest {
 
     @Test
     @DisplayName("하나의 할일 카드 안에 들어있는 모든 댓글 조회하는 기능 테스트 (없어도 빈칸으로 조회할 수 있다.)")
-    void findAllByCard_IdTest(){
+    void findAllByCardIdTest(){
         // when
-        List<Comment> commentList = commentRepository.findAllByCard_Id(1L); // commentRepository의 findAllByCard_Id(Long id)를 이용하여 전체 댓글 조회
+        List<Comment> commentList = commentRepository.findAllByCardId(1L); // commentRepository의 findAllByCard_Id(Long id)를 이용하여 전체 댓글 조회
 
         // then
         assertThat(commentList).hasSize(10);
