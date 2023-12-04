@@ -35,7 +35,7 @@ class CommentServiceTest {
 
     @Test
     @DisplayName("댓글 작성 기능 성공 테스트")
-    void createCommentTestSuccess(){
+    void createCommentTestSuccess() {
         User user = new User();
         CardRequestDto requestDto = new CardRequestDto("카드 제목", "카드 내용", true, false);
         Card card = new Card(requestDto, user);
@@ -50,5 +50,21 @@ class CommentServiceTest {
         CommentResponseDto responseDto = commentService.createComments(card.getId(), commentRequestDto, user);
 
         assertThat("댓글 내용").isEqualTo(responseDto.getContent());
+    }
+
+    @Test
+    @DisplayName("댓글 작성 기능 실패 테스트")
+    void createCommentTestFailCardIsNotExist() {
+        User user = new User();
+        Card card = new Card();
+        CommentRequestDto commentRequestDto = new CommentRequestDto("댓글 내용");
+
+        given(cardRepository.findById(card.getId())).willReturn(Optional.empty());
+
+        Exception exception = assertThrows(NullPointerException.class,
+                () -> commentService.createComments(card.getId(), commentRequestDto, user)
+        );
+
+        assertThat("해당 카드는 존재하지 않습니다.").isEqualTo(exception.getMessage());
     }
 }
