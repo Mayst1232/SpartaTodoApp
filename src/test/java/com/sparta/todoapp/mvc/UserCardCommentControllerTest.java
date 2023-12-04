@@ -464,4 +464,40 @@ class UserCardCommentControllerTest {
                 .principal(mockPrincipal)
         ).andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("유저가 작성한 댓글이 존재하지 않을 때 수정 기능 실패 테스트 / 수정하려는 댓글이 존재하지 않을 때 수정  기능 실패 테스트")
+    void modifyCommentTestFailCommentIsNotExist() throws Exception {
+        this.mockUserSetup();
+
+        CommentRequestDto requestDto = new CommentRequestDto("변경 댓글 내용");
+        String commentInfo = objectMapper.writeValueAsString(requestDto);
+
+        given(commentService.modifyComment(any(),any(),any())).willThrow(NullPointerException.class);
+
+        mvc.perform(patch("/api/cards/comments/1")
+                .content(commentInfo)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+                ).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("수정하려고 하는 댓글이 유저의 것이 아닐 때 수정 기능 실패 테스트")
+    void modifyCommentTestFailModifyAndDeleteOnlyMine() throws Exception {
+        this.mockUserSetup();
+
+        CommentRequestDto requestDto = new CommentRequestDto("변경 댓글 내용");
+        String commentInfo = objectMapper.writeValueAsString(requestDto);
+
+        given(commentService.modifyComment(any(),any(),any())).willThrow(IllegalArgumentException.class);
+
+        mvc.perform(patch("/api/cards/comments/1")
+                .content(commentInfo)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .principal(mockPrincipal)
+        ).andExpect(status().isBadRequest());
+    }
 }
