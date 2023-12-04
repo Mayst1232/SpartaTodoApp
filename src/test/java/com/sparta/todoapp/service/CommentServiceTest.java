@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -200,7 +201,6 @@ class CommentServiceTest {
     @DisplayName("user가 작성한 댓글이 한 개도 없을 경우 테스트 실패 예외처리")
     void checkCommentFailTestUserNotWriteComment() {
         // given
-        Comment myComment;
         List<Comment> commentList = new ArrayList<>();
         Card card = new Card();
         card.setId(1L);
@@ -226,5 +226,79 @@ class CommentServiceTest {
         );
 
         assertThat("작성한 댓글이 존재하지 않습니다.").isEqualTo(exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("user가 작성한 댓글이 한 개도 없을 경우 테스트 실패 예외처리")
+    void checkCommentFailTestCommentIsNotExist() {
+        // given
+        List<Comment> commentList = new ArrayList<>();
+        Card card = new Card();
+        card.setId(1L);
+        User user = new User();
+        user.setUsername("hwang");
+
+        for(int i = 0; i < 5; i++){
+            CommentRequestDto requestDto = new CommentRequestDto("댓글 내용 " + i);
+
+            Comment comment = new Comment(requestDto.getContent(), user.getUsername(), user, card);
+            comment.setId((long) i+1);
+            commentList.add(comment);
+        }
+        Long id = 100L;
+
+        User findUser = new User();
+        user.setUsername("finder");
+
+        given(commentRepository.findAllByUser(findUser)).willReturn(commentList);
+        given(commentRepository.findById(id)).willReturn(Optional.empty());
+
+        Exception exception = assertThrows(NullPointerException.class,
+                () -> commentService.checkComment(id, findUser)
+        );
+
+        assertThat("해당 id의 댓글은 존재하지 않습니다.").isEqualTo(exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("user가 작성한 댓글이 한 개도 없을 경우 테스트 실패 예외처리")
+    void checkCommentFailTestModifyAndDeleteCommentOnlyMine() {
+        // given
+        List<Comment> commentList = new ArrayList<>();
+        Card card = new Card();
+        card.setId(1L);
+        User user = new User();
+        user.setUsername("hwang");
+
+        for(int i = 0; i < 2; i++){
+            CommentRequestDto requestDto = new CommentRequestDto("댓글 내용 " + i);
+
+            Comment comment = new Comment(requestDto.getContent(), user.getUsername(), user, card);
+            comment.setId((long) i+1);
+            commentList.add(comment);
+        }
+
+        Comment findcomment = commentList.get(0);
+
+        User findUser = new User();
+        user.setUsername("finder");
+        List<Comment> myCommentList = new ArrayList<>();
+
+        for(int i = 2; i < 4; i++){
+            CommentRequestDto requestDto = new CommentRequestDto("댓글 내용 " + i);
+
+            Comment comment = new Comment(requestDto.getContent(), findUser.getUsername(), findUser, card);
+            comment.setId((long) i+1);
+            myCommentList.add(comment);
+        }
+
+        given(commentRepository.findAllByUser(findUser)).willReturn(myCommentList);
+        given(commentRepository.findById(findcomment.getId())).willReturn(Optional.of(findcomment));
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> commentService.checkComment(findcomment.getId(), findUser)
+        );
+
+        assertThat("댓글을 작성한 사람만 수정/삭제 할 수 있습니다.").isEqualTo(exception.getMessage());
     }
 }
