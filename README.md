@@ -129,3 +129,37 @@ https://documenter.getpostman.com/view/30857682/2s9YXpWJpo#869d62ab-cec4-41bf-bb
 4. ResponseEntity를 이용한 예외처리를 통해 Status와 message를 전달하는 방법을 이번 프로젝트를 통해 연습을 하였습니다. 좀 더 많은 코드를 보고 더 많은 경험이 필요할 것 같습니다.
 
 ---------------------------------------------------------------------------------------------
+## 설계해야 하는 것
+
+- [ ]  **🆕 DTO, Entity Test 추가하기**
+    - `@Test` 를 사용해서 DTO 와 Entity Test 를 추가합니다.
+    - User, Todo, Comment, DTO 에 존재하는 메서드들에 대해서 테스트를 추가합니다.
+- [ ]  **🆕 Controller Test 추가하기**
+    - `@WebMvcTest` 를 사용하여 Controller Test 를 추가합니다.
+    - Todo, Comment Controller 에 대해서 테스트를 추가합니다.
+- [ ]  **🆕 Service Test 추가하기**
+    - `@ExtendWith` 를 사용하여 Service Test 를 추가합니다.
+    - User, UserDetails, Todo, Comment Service 에 대해서 테스트를 추가합니다.
+- [ ]  **🆕 Repository Test 추가하기**
+    - `@DataJpaTest` 를 사용하여 Repository Test 를 추가합니다.
+    - User, Todo, Comment Repository 에 대해서 테스트를 추가합니다.
+     
+## 사용한 기술
+1. @Test를 이용하여 테스트 코드 작성
+2. Mock을 이용한 가짜 객체 생성
+3. assertThat을 이용한 예측값과 실제값 비교
+4. mockMvc를 이용하여 가상 서버로 응답 받기
+5. given - when - then 패턴
+
+## 어려웠던 점
+1. Generate의 타입이 Identity였는데 이 경우 Transaction이 걸려있어도 rollback이 되지 않는다는 사실을 몰랐습니다.
+2. Test라는 개념 자체가 와닿지 않는 부분이 있었습니다.
+3. 새로운 개념을 공부하는 것에 대하여 조금 어려운 부분이 있었습니다.
+4. given() 메소드에서 메소드를 만났을 때 Return에 해당하는 부분이 나간다는 사실을 받아들이기 어려웠습니다.
+5. void 테스트를 어떻게 해야하는지가 막막했습니다.
+
+### 해결방법
+1. 테스트에 관하여 좀 더 많은 공부를 진행해야 할 것 같습니다.
+2. void 메소드를 테스트를 진행할 때 verify를 사용하거나 doXXX를 사용하여 테스트를 진행하였습니다.
+3. assertThat을 이용하여 비교하는 방식을 더 공부하였습니다.
+4. Test가 더 익숙해지도록 프로그램을 짤 때 자주 이용해 봐야겠습니다.
