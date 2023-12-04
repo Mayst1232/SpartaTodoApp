@@ -195,4 +195,36 @@ class CommentServiceTest {
         // then
         assertThat("댓글 내용 0").isEqualTo(myComment.getContent());
     }
+
+    @Test
+    @DisplayName("user가 작성한 댓글이 한 개도 없을 경우 테스트 실패 예외처리")
+    void checkCommentFailTestUserNotWriteComment() {
+        // given
+        Comment myComment;
+        List<Comment> commentList = new ArrayList<>();
+        Card card = new Card();
+        card.setId(1L);
+        User user = new User();
+        user.setUsername("hwang");
+
+        for(int i = 0; i < 5; i++){
+            CommentRequestDto requestDto = new CommentRequestDto("댓글 내용 " + i);
+
+            Comment comment = new Comment(requestDto.getContent(), user.getUsername(), user, card);
+            comment.setId((long) i+1);
+            commentList.add(comment);
+        }
+        Comment findComment = commentList.get(0);
+
+        User findUser = new User();
+        user.setUsername("finder");
+
+        given(commentRepository.findAllByUser(findUser)).willReturn(new ArrayList<>());
+
+        Exception exception = assertThrows(NullPointerException.class,
+                () -> commentService.checkComment(findComment.getId(), findUser)
+        );
+
+        assertThat("작성한 댓글이 존재하지 않습니다.").isEqualTo(exception.getMessage());
+    }
 }
